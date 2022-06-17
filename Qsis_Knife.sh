@@ -151,7 +151,7 @@ _ScriptLog(){
 	echo -e Run dir........................: $LDIR
 	echo -e UserID.........................: `id`
 	echo -e ScriptID.......................: $$
-	echo -e Nº parametros..................: $#
+	echo -e NÂº parametros..................: $#
 	if [ "$#" -gt 0 ]; then
 		echo -e Arguments......................: $*
 	fi
@@ -880,7 +880,7 @@ _UvOldBak_(){
 	echo -e Standard Output................: $ZIPLOG
 	echo -e Standard Error.................: $ZIPERR \\n
 	
-	echo -e Generando copia de la instalación actual de UniVerse \\n 
+	echo -e Generando copia de la instalaciÃ³n actual de UniVerse \\n 
 	zip -r $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
 
 	echo -e Guardamos el fichero uvconfig para reponerlo al final \\n 
@@ -992,7 +992,7 @@ _Licen_Uv_(){
 		esac
 		
 	else
-		echo -e "\\n ¡¡¡¡ Atencion no encontrado $UVDIR !!!! \\n"
+		echo -e "\\n Â¡Â¡Â¡Â¡ Atencion no encontrado $UVDIR !!!! \\n"
 	fi
 	
 	cd $LDIR
@@ -1286,7 +1286,7 @@ _TstRclone(){
 		else
 			echo -e "==== Rclone ko ===="
 			#wget https://downloads.rclone.org/rclone-current-linux-amd64.zip
-			#En Centos5 el certificado ya no es válido
+			#En Centos5 el certificado ya no es vÃ¡lido
 			wget --append-output=$RRLOG http://soporte.quiter.es/publico/ks/rclone-current-linux-amd64.zip
 			if [ -f rclone-current-linux-amd64.zip ];
 			then
@@ -3618,12 +3618,12 @@ _Cambio_lin_a_lin(){
 				_Qtr_plat_ 10 14 $FUNCNAME
 				if [ $1 ]
 					then
-						echo -e "\\n ¡¡¡¡¡      E j e c u c i o n    p a r a   P r o d u c c i o n      !!!!! \\n"
+						echo -e "\\n Â¡Â¡Â¡Â¡Â¡      E j e c u c i o n    p a r a   P r o d u c c i o n      !!!!! \\n"
 						# Cuando realizamos el ultimo rsync para entrar en produccion,
 						# no pausamos tareas QDemonio _QD_pause_ las tareas del QDemonio quedan como estaban.
 						# no limpiamos sms en cola    _Cl_Qms___ dejamos los sms en cola como estaban.
 					else
-						echo -e "\\n ¡¡¡¡¡      E j e c u c i o n    p a r a   T e s t P r o c e s o    !!!!! \\n"
+						echo -e "\\n Â¡Â¡Â¡Â¡Â¡      E j e c u c i o n    p a r a   T e s t P r o c e s o    !!!!! \\n"
 						_QD_pause_ 11 14 $FUNCNAME
 						_Cl_Qms___ 12 14 $FUNCNAME
 				fi
@@ -3905,8 +3905,8 @@ _UniVerse_Install(){
 	date
 	if ipcs -m | grep -q '0xacec';
 		then
-			echo -e "\\n ¡¡¡¡¡  Existen segmentos de memoria compartida asignados a UniVerse  !!!!! \\n"
-			echo -e "\\n ¡¡¡¡¡      P  r  o  c  e  s  o       d  e  t  e  n  i  d  o          !!!!! \\n"
+			echo -e "\\n Â¡Â¡Â¡Â¡Â¡  Existen segmentos de memoria compartida asignados a UniVerse  !!!!! \\n"
+			echo -e "\\n Â¡Â¡Â¡Â¡Â¡      P  r  o  c  e  s  o       d  e  t  e  n  i  d  o          !!!!! \\n"
 			echo -e "\\n Ejecuta ipcs -m y elimina los segmentos 0xacecXXX con ipcrm -M 0xacecXXX   \\n"
 		else
 			echo -e "\\n Memoria compartida sin segmentos asignados a UniVerse, continua el proceso \\n"
@@ -3935,8 +3935,8 @@ _UniVerse_Upgrade(){
 	date
 	if ipcs -m | grep -q '0xacec';
 		then
-			echo -e "\\n ¡¡¡¡¡  Existen segmentos de memoria compartida asignados a UniVerse  !!!!! \\n"
-			echo -e "\\n ¡¡¡¡¡      P  r  o  c  e  s  o       d  e  t  e  n  i  d  o          !!!!! \\n"
+			echo -e "\\n Â¡Â¡Â¡Â¡Â¡  Existen segmentos de memoria compartida asignados a UniVerse  !!!!! \\n"
+			echo -e "\\n Â¡Â¡Â¡Â¡Â¡      P  r  o  c  e  s  o       d  e  t  e  n  i  d  o          !!!!! \\n"
 			echo -e "\\n Ejecuta ipcs -m y elimina los segmentos 0xacecXXX con ipcrm -M 0xacecXXX   \\n"
 		else
 			echo -e "\\n Memoria compartida sin segmentos asignados a UniVerse, continua el proceso \\n"
@@ -4164,13 +4164,13 @@ _ScriptLog
 ### proceso DESPLEGAR INSTANCIAX [platafoma quiterX, configura sistema, permisos, trigers, pargen, qdblive, desactivar Qae]
 ### 	Asumimos:
 ### 		1.- Dms pre y post-plataformado.
-###			2.- En el directorio de lanzamiento, QsisKnife descarga dentro de RepoLin si no existen:
-###					2.1.- setup_plataforma.properties modificado para QsisKnife
-###					2.2.- QDBLiveLx.tar.gz
-###					2.3.- CreaUsuario
+###		2.- En el directorio de lanzamiento, QsisKnife descarga dentro de RepoLin si no existen:
+###			2.1.- setup_plataforma.properties modificado para QsisKnife
+###			2.2.- QDBLiveLx.tar.gz
+###			2.3.- CreaUsuario
 ### 		3.- En el directorio de lanzamiento, existe RepoLin/$HOST_QuiterSetup.zip con QuiterSetup+Qbase que queremos desplegar.
-###     			El proceso de generar Qbase nos lo deja asi.
-###			4.- Para evitar interferir en produccion plataforma instanciaX con usuario quiterX.
+###     	    El proceso de generar Qbase nos lo deja asi.
+###		4.- Para evitar interferir en produccion plataforma instanciaX con usuario quiterX.
 ### 	Configurar en _Load_Var():
 ### 		1.- sufijo B,C,...
 ### 		2.- quiterpass password de quiterb,quiterc... 

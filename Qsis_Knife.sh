@@ -867,9 +867,10 @@ _UvOldBak_(){
 	LOGDATE=`date +\%F`
 	LOGTIME=`date +\%T`
 	DIRLOG="$3_$1_$2_${FUNCNAME[0]}"
-	ZIPFIL="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UvOldBak.zip"
+	ZIPFIL="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UvOldBak.tgz"
 	ZIPLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UvOldBak_stdout.log"
 	ZIPERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UvOldBak_stderr.log"
+	UVCFG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UvConfig"
 	echo -e $separador 
 	mkdir -p $DIRLOG
 	cd $LDIR
@@ -881,9 +882,12 @@ _UvOldBak_(){
 	echo -e Standard Error.................: $ZIPERR \\n
 	
 	echo -e Generando copia de la instalación actual de UniVerse \\n 
-	zip -r $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
+	#zip -r --symlinks $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
+	# tar gestiona mejor los enlaces simbolicos
+	tar cvfz $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
 
 	echo -e Guardamos el fichero uvconfig para reponerlo al final \\n 
+	cp -v /usr/uv/uvconfig $UVCFG
 	cp -v /usr/uv/uvconfig $LDIR/$DIRLOG/uvconfig.bak
 
 	echo -e Contenido en $LDIR/$DIRLOG \\n

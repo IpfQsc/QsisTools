@@ -200,7 +200,7 @@ _DownUnzip(){
 	# necesitamos el sitio ftp /quitersetup 
 	#DWCMD1="wget -r -np -nH -N --cut-dirs=1 ftp://ftpq:collega@$DMSold/quitersetup/Cliente_Qbase.zip"
 	#DWCMD2="curl -v -p ftp://ftpq:collega@$DMSold/quitersetup/Cliente_qjava_qrs_quiterweb_mysql.zip -o Cliente_qjava_qrs_quiterweb_mysql.zip"
-	DWCMD2="curl -v -p ftp://eslauto:10800@datosconversion.quiter.com/Cliente_Qbase.zip -o Cliente_Qbase.zip"
+	DWCMD1="curl -v -p ftp://eslauto:10800@datosconversion.quiter.com/Cliente_Qbase.zip -o Cliente_Qbase.zip"
 	DWCMD2="curl -v -p ftp://eslauto:10800@datosconversion.quiter.com/Cliente_qjava_qrs_quiterweb_mysql.zip -o Cliente_qjava_qrs_quiterweb_mysql.zip"
 	#
 	UNZIP1="unzip -o Cliente_Qbase.zip"
@@ -208,8 +208,8 @@ _DownUnzip(){
 	echo -e $separador 
 	mkdir -p $DIRLOG
 	cd $LDIR
-	mkdir -p old_quiter
-	cd old_quiter
+	mkdir -p _old_quiter
+	cd _old_quiter
 	echo -e "==== [$1/$2] Download & Unzip ===="
 	echo -e Date...........................: `date`
 	echo -e Run dir........................: `pwd`
@@ -1869,7 +1869,7 @@ _ImpMySql_(){
 	IMERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Importar_MySql_stderr.log"
 	MXSQL1="$LDIR/$DIRLOG/show_allowed_packet.sql"
 	MXSQL2="$LDIR/$DIRLOG/set__allowed_packet.sql"
-	MYFILE="$LDIR/old_quiter/mysql_cliente.sql"
+	MYFILE="$LDIR/_old_quiter/mysql_cliente.sql"
 	echo -e $separador 
 	mkdir -p $DIRLOG
 	cd $LDIR
@@ -1906,7 +1906,7 @@ _Qtr_plat_(){
 	DIRLOG="$3_$1_$2_${FUNCNAME[0]}"
 	QPLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Quiter_Plat_stdout.log"
 	QPERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Quiter_Plat_stderr.log"
-	RSCMD="/usr/bin/rsync -ahv --delete --stats --progress $LDIR/old_quiter/quiter/* /u2/quiter.plat/"
+	RSCMD="/usr/bin/rsync -ahv --delete --stats --progress $LDIR/_old_quiter/quiter/* /u2/quiter.plat/"
 	RSLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_QRsync_${sufijo}_stdout.log"
 	RSERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_QRsync_${sufijo}_stderr.log"
 	echo -e $separador
@@ -1923,10 +1923,10 @@ _Qtr_plat_(){
 	echo -e Quiter Path....................: $QPATH \\n 
 	#echo -e $RSCMD 1>$RSLOG 2>$RSERR
 	#$RSCMD 1>>$RSLOG 2>>$RSERR
-	#/usr/bin/cp -rpvf old_quiter/quiter/QRS /u2/quiter.plat                                                                         1>>$QPLOG 2>>$QPERR
-	#/usr/bin/cp -rpvf old_quiter/quiter/qjava/cache /u2/quiter.plat/qjava                                                           1>>$QPLOG 2>>$QPERR
-	#/usr/bin/cp -rpvf old_quiter/quiter/qjava/conf /u2/quiter.plat/qjava                                                            1>>$QPLOG 2>>$QPERR
-	#/usr/bin/cp -rpvf old_quiter/quiter/qjava/apps/quitergateway/tomcat/webapps/ /u2/quiter.plat/qjava/apps/quitergateway/tomcat    1>>$QPLOG 2>>$QPERR
+	#/usr/bin/cp -rpvf _old_quiter/quiter/QRS /u2/quiter.plat                                                                         1>>$QPLOG 2>>$QPERR
+	#/usr/bin/cp -rpvf _old_quiter/quiter/qjava/cache /u2/quiter.plat/qjava                                                           1>>$QPLOG 2>>$QPERR
+	#/usr/bin/cp -rpvf _old_quiter/quiter/qjava/conf /u2/quiter.plat/qjava                                                            1>>$QPLOG 2>>$QPERR
+	#/usr/bin/cp -rpvf _old_quiter/quiter/qjava/apps/quitergateway/tomcat/webapps/ /u2/quiter.plat/qjava/apps/quitergateway/tomcat    1>>$QPLOG 2>>$QPERR
 	#cp -rpv /u2/quiter.plat/qjava $QPATH                    1>>$QPLOG 2>>$QPERR
 	#cp -rpv /u2/quiter.plat/QDBLiveLx $QPATH                1>>$QPLOG 2>>$QPERR
 	#cp -rpv /u2/quiter.plat/BBADAPTER $QPATH                1>>$QPLOG 2>>$QPERR
@@ -1954,7 +1954,7 @@ _Qtr_plat_(){
 	cd $LDIR
 	echo -e "\\n==== Completed Quiter Plat ==== \\n"
 }
-
+		
 _Old_User_(){
 	LOGDATE=`date +\%F`
 	LOGTIME=`date +\%T`
@@ -2736,7 +2736,12 @@ _Q_DBLive_(){
 	mv -v $QPATH/QDBLiveLx/TaskQDBLiveLx.sh $QPATH/QDBLiveLx/TaskQDBLiveLx.mod 1>>$QDBLOG 2>>$QDBERR
 	sed "s{QSISPATH{$QPATH{g " $QPATH/QDBLiveLx/TaskQDBLiveLx.mod > $QPATH/QDBLiveLx/TaskQDBLiveLx.sh
 	du -hs $QPATH/QDBLiveLx
-	cat /var/spool/cron/$gquiter
+	if [ -f /var/spool/cron/$gquiter ];
+		then
+			cat /var/spool/cron/$gquiter
+		else
+			echo -e "\\n No existe /var/spool/cron/$gquiter\\n"
+	fi
 	cd $QPATH/QDBLiveLx
 	pwd
 	echo -e "sh QDBLiveLx.sh SMP -ac $QPATH/GEN4GL/ -f PARAMETROS"

@@ -1375,13 +1375,19 @@ _RepoLin2_(){
 	echo -e Standard Error.................: $RRERR
 	echo -e Rclone command.................: $RRCMD \\n
 	mkdir -p $DIRLOG
-	_TstRclone 1>$RRLOG 2>$RRERR
-	echo -e Descargando QDBLiveLx ...\\n
-	_RcloneDw_ QDBLiveLx.tar.gz  1>>$RRLOG 2>>$RRERR
-	echo -e Descargando setup_plataforma.properties ...\\n
-	_RcloneDw_ setup_plataforma.properties 1>>$RRLOG 2>>$RRERR
-	echo -e Descargando CreaUsuario ...\\n
-	_RcloneDw_ CreaUsuario 1>>$RRLOG 2>>$RRERR
+	if [ -d $LDIR/RepoLin ];
+		then
+			echo -e "Existe $LDIR/RepoLin no descargamos     \\n"
+		else
+			echo -e "No Existe $LDIR/RepoLin descargamos     \\n"
+			_TstRclone                                         1>$RRLOG 2>$RRERR
+			echo -e "Descargando QDBLiveLx                   \\n"   
+			_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
+			echo -e "Descargando setup_plataforma.properties \\n"   
+			_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
+			echo -e "Descargando CreaUsuario                 \\n"   
+			_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
+	fi
 	#Descargamos Qbase que hemos generado en otro DMS
 	#echo -e Descargando GironautoDms_QuiterSetup.zip ...\\n
 	#curl -v -p ftp://ftpq:collega@192.168.0.200/GironautoDms_QuiterSetup.zip -o RepoLin/GironautoDms_QuiterSetup.zip 1>>$RRLOG 2>>$RRERR 

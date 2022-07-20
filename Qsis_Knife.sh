@@ -1990,7 +1990,8 @@ _Old_User_(){
 	echo -e Quiter Path....................: $QPATH
 	echo -e Sufijo.........................: $sufijo
 	echo -e GQuiter........................: $gquiter
-	echo -e Dms Old........................: $DMSold 
+	echo -e Dms Old........................: $DMSold
+	echo -e Usuario ssh a DmsOld...........: $rootuser
 	
 	echo -e \\n 1 - Ejecutamos Ssh+UvCmd1 para obtener QCOD.
 	echo -e SshCmd1+UvCmd1 Standard Output.: $SSHLOG1
@@ -2001,7 +2002,7 @@ _Old_User_(){
 	echo -e $UVCMD1                            >> $SSHCMD1
 	#echo -e "/u2/uv/bin/uv \"QSIS.RUN DATE\"" >> $SSHCMD1
 	echo -e "exit"                             >> $SSHCMD1
-	ssh root@$DMSold < $SSHCMD1 1>$SSHLOG1 2>$SSHERR1
+	ssh $rootuser@$DMSold < $SSHCMD1 1>$SSHLOG1 2>$SSHERR1
 	QCOD=`cat $SSHLOG1 |awk '/Usuario/ {print $1}'|awk -F'_' '{print $1}'`
 	#QCOD=`cat $SSHLOG1 |awk '/digo/ {print $1}'|awk -F'_' '{print $1}'`
 	#QCOD=`cat $SSHLOG1 |awk '/Nro/ {print $1}'|awk -F'_' '{print $1}'`
@@ -2020,7 +2021,7 @@ _Old_User_(){
 	echo -e $UVCMD2                            >> $SSHCMD2
 	#echo -e "/u2/uv/bin/uv \"QSIS.RUN DATE\"" >> $SSHCMD2
 	echo -e "exit"                             >> $SSHCMD2
-	ssh root@$DMSold < $SSHCMD2 1>$SSHLOG2 2>$SSHERR2
+	ssh $rootuser@$DMSold < $SSHCMD2 1>$SSHLOG2 2>$SSHERR2
 	cat $SSHLOG2 |awk -v pat="$QCOD" '$0 ~ pat {print $2}' > $UAOLD
 	echo -e Usuarios activos en DmsOld.....: `wc $UAOLD|awk -F' ' '{print $1}'`
 	#ssh -t -t root@10.0.1.60 < $SSHCMD 1>${SSHLOGt}_1 2>${SSHLOGt}_2
@@ -2039,7 +2040,7 @@ _Old_User_(){
 	
 	echo -e \\n 4 - Traemos de DmsOld el fichero shadow con las password.
 	echo -e Archivo password en DmsOld.....: $PSOLD
-	/usr/bin/rsync -ahv --delete --stats --progress root@$DMSold:/etc/shadow $PSOLD 1>$RSNCLOG 2>$RSNCERR
+	/usr/bin/rsync -ahv --delete --stats --progress $rootuser@$DMSold:/etc/shadow $PSOLD 1>$RSNCLOG 2>$RSNCERR
 		
 	echo -e \\n 5 - Buscamos en el fichero shadowd de DmsOld los password-hash de los usuarios a dar de alta en DmsNew.
 	echo -e Archivo password en DmsNew.....: $PSNEW
@@ -3667,7 +3668,7 @@ _Cambio_win_a_lin(){
 	_QsExePlt_ 02 14 $FUNCNAME &
 	sleep 10
 	date
-	echo -e "==== Lanzado QuiterSeutp en background \\n"
+	echo -e "\\n ==== Lanzado QuiterSetup en background \\n"
 	echo -e $separador
 	cd $LDIR
 	if [ -d $QPATH ];
@@ -3892,7 +3893,7 @@ _Activar_DmsTest_(){
 	_Q_Triger_ 02 04 $FUNCNAME
 	_Q_ParGen_ 03 04 $FUNCNAME
 	_Q_Rights_ 04 04 $FUNCNAME
-	#_Ko_Qae___ 05 05 $FUNCNAME
+	#_Ko_Qae___ 06 06 $FUNCNAME
 	date
 	echo -e "[ Fin Activar DmsTest ] \\n"
 }

@@ -3081,6 +3081,11 @@ _Q_ParGen_(){
 			echo "$QAWID"              >> $QCMD	
 			echo ""                    >> $QCMD
 			echo "FI"                  >> $QCMD
+			echo "DATE"                >> $QCMD
+			echo "RUN BP PUTUSRTRANS"  >> $QCMD
+			echo "ftpq"                >> $QCMD
+			echo "$ftpqpass"           >> $QCMD
+			echo "QUITER"              >> $QCMD
 			;;
 		*)
 			echo "DATE"                >> $QCMD
@@ -4049,7 +4054,7 @@ _Redir_Log
 _ScriptLog
 
 ### funcion CONFIGURA FIREWALL
-### 	Incluir los interfaces tun100, tap100, tun1000 y TunQis en la zona trusted 
+###		Incluir los interfaces tun100, tap100, tun1000 y TunQis en la zona trusted 
 ### 	Primero conectamos los interfaces almenos en una ocasion para poder agregarlos en la zona trusted
 ### 	Recomendado acceder saltando desde QAE para configurar fw del DMS y viceversa
 #_Fwd_Dms__
@@ -4098,9 +4103,9 @@ _ScriptLog
 ### 	Logica despues de refrescar las cuentas principales del DmsPruebas con DmsProduccion
 ### 	Generalmente el refresco de las cuentas lo hace el cliente.
 ### 	El proceso incluye:
-###     	funcion que podemos activar si tenemos que hacer el refresco nosotros
-###     	funcion que podemos activar si queremos desactivar Qae
-### 	Configurar en Load_Var() el identificador de apliacion QAWID
+###			funcion que podemos activar si tenemos que hacer el refresco nosotros
+###			funcion que podemos activar si queremos desactivar Qae
+### 	Configurar en Load_Var() el identificador de apliacion QAWID y la clave de ftpq en DmsPruebas
 #_Activar_DmsTest_
 
 ### proceso ACTIVAR QUITER [trigers, pargen, permisos]
@@ -4186,45 +4191,45 @@ _ScriptLog
 ###					2.2.- QDBLiveLx.tar.gz
 ###					2.3.- CreaUsuario
 ### 		3.- En el directorio de lanzamiento, existe RepoLin/$HOST_QuiterSetup.zip con QuiterSetup+Qbase que queremos desplegar.
-###     			El proceso de generar Qbase nos lo deja asi.
+###					El proceso de generar Qbase nos lo deja asi.
 ###			4.- Para evitar interferir en produccion plataforma instanciaX con usuario quiterX.
 ### 	Configurar en _Load_Var():
 ### 		1.- sufijo B,C,...
 ### 		2.- quiterpass password de quiterb,quiterc... 
 ### 		3.- ftpqpass   password de ftpq para el PAR_GEN 37
 ### 		4.- ip del Dms para el PAR_GEN 42
-###     Atencion
+###		Atencion
 ###			.- incluye funcion _Get_Qbase__ para 
-###         .- incluye funcion _Q_Proces_ para construir los indices del FTORMPT que el Qbase no incluye
-###         .- incluye funcion para desactivar QAE
+###			.- incluye funcion _Q_Proces_ para construir los indices del FTORMPT que el Qbase no incluye
+###			.- incluye funcion para desactivar QAE
 ###			.- es posible encadenar GENERAR QBASE y DESPLEGAR INSTANCIAX
 #_Desplegar__InstX
 
 ### proceso DESPLEGAR QUITER [platafoma quiter, permisos, trigers, pargen, qdblive]
 ### Este proceso es util cuando por algun motivo el proceso de post-plataformado no desplego Quiter
 ### 	Asumimos:
-### 		1.- Dms pre y post-plataformado.
+###			1.- Dms pre y post-plataformado.
 ###			2.- En el directorio de lanzamiento, QsisKnife descarga dentro de RepoLin si no existen:
 ###					2.1.- setup_plataforma.properties modificado para QsisKnife
 ###					2.2.- QDBLiveLx.tar.gz
 ###					2.3.- CreaUsuario
-### 		3.- En el directorio de lanzamiento, existe RepoLin/$HOST_QuiterSetup.zip con QuiterSetup+Qbase que queremos desplegar.
-###     			El proceso de generar Qbase nos lo deja asi.
+###			3.- En el directorio de lanzamiento, existe RepoLin/$HOST_QuiterSetup.zip con QuiterSetup+Qbase que queremos desplegar.
+###					El proceso de generar Qbase nos lo deja asi.
 ### 	Configurar en _Load_Var():
-### 		1.- rootuser/rootpassword para plataformar
-### 		2.- ftpqpass   password de ftpq para el PAR_GEN 37
-### 		3.- ip del Dms para el PAR_GEN 42
-###     Atencion
-###         .- incluye funcion _Q_Proces_ para construir los indices del FTORMPT que el Qbase no incluye
+###			1.- rootuser/rootpassword para plataformar
+###			2.- ftpqpass   password de ftpq para el PAR_GEN 37
+###			3.- ip del Dms para el PAR_GEN 42
+###		Atencion
+###			.- incluye funcion _Q_Proces_ para construir los indices del FTORMPT que el Qbase no incluye
 #_Desplegar_Quiter
 
 ### proceso PRE--PLATAFORMADO standard Centos/RedHat_7_8 
 #_Pre_Plataformado
 
 ### proceso POST-PLATAFORMADO DMS standard
-###     Atencion
-###         .- incluye funcion _Q_Proces_ para ejecutar procesos en Quiter una vez plataformado
-###			   por ejemplo construir los indices del FTORMPT que el Qbase no incluye (corregido en 2021/10)
+###		Atencion
+###			.- incluye funcion _Q_Proces_ para ejecutar procesos en Quiter una vez plataformado
+###				por ejemplo construir los indices del FTORMPT que el Qbase no incluye (corregido en 2021/10)
 #_Pst_Platform_DMS
 
 ### proceso POST-PLATAFORMADO QAE standard

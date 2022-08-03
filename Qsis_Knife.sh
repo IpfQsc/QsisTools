@@ -1012,26 +1012,26 @@ _Get_Qbase(){
 	RSLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Get_Qbase_${sufijo}_stdout.log"
 	RSERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Get_Qbase_${sufijo}_stderr.log"
 	ZIPFIL="$LDIR/RepoLin/${HOST}_QuiterSetup.zip"
-	RSCMD="/usr/bin/rsync -ahv --delete --stats --progress $rootuser@$DMSold:$ZIPFIL $ZIPFIL"
-	#RSCMD="/usr/bin/rsync -ahv --delete --stats --progress --exclude=quiter/qjava root@$DMSold:$QPATH $LDIR"
+	#RSCMD="/usr/bin/rsync -ahv --delete --stats --progress $rootuser@$DMSold:$ZIPFIL $ZIPFIL"
+	RSCMD="curl -v -p ftp://ftpq:collega@${DMSold}/${HOST}_QuiterSetup.zip -o RepoLin/${HOST}_QuiterSetup.zip"
 	echo -e $separador 
 	mkdir -p $DIRLOG
 	cd $LDIR
-	echo -e "==== [$1/$2] Start Rsync $ZIPFIL ===="
+	echo -e "==== [$1/$2] Download $ZIPFIL generado en $DMSold  ===="
 	echo -e Date...........................: `date`
 	echo -e Run dir........................: `pwd`
 	echo -e Standard Output................: $RSLOG
 	echo -e Standard Error.................: $RSERR
 	echo -e Rsync command..................: $RSCMD
-	echo -e Sufijo.........................: $sufijo
 	echo -e Qbase Origen...................: $ZIPFIL \\n
 	echo -e $RSCMD 1>$RSLOG 2>$RSERR
 	$RSCMD 1>>$RSLOG 2>>$RSERR
+	#ln -vs ${HOST}_QuiterSetup.zip RepoLin/${HOST}_QuiterSetup.zip 1>>$RRLOG 2>>$RRERR
 	cd $LDIR
 	ls -lha RepoLin
 	du -hs RepoLin
 	date
-	echo -e "\\n==== Completed rsync $ZIPFIL ==== \\n"
+	echo -e "\\n==== Completed download $ZIPFIL ==== \\n"
 }
 
 _CfgSufijo(){
@@ -1388,10 +1388,6 @@ _RepoLin2_(){
 			echo -e "Descargando CreaUsuario                 \\n"   
 			_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
 	fi
-	#Descargamos Qbase que hemos generado en otro DMS
-	#echo -e Descargando GironautoDms_QuiterSetup.zip ...\\n
-	#curl -v -p ftp://ftpq:collega@192.168.0.200/GironautoDms_QuiterSetup.zip -o RepoLin/GironautoDms_QuiterSetup.zip 1>>$RRLOG 2>>$RRERR 
-	#ln -vs GironautoDms_QuiterSetup.zip RepoLin/${HOST}_QuiterSetup.zip 1>>$RRLOG 2>>$RRERR
 	ls -lha RepoLin
 	du -hs RepoLin
 	date

@@ -925,12 +925,12 @@ _UvOldCfg_(){
 	echo -e Standard Output................: $UVLOG
 	echo -e Standard Error.................: $UVERR
 	echo -e UniVerse Old instalado en......: $UVDIRINS
-	echo -e UniVerse Old timeout...........:
+	echo -e \\n UniVerse Old timeout...........:
 	cat $UVDIRINS/unishared/unirpc/unirpcservices
-	echo -e UniVerse Old tuning............:
+	echo -e \\n UniVerse Old tuning............:
 	$UVDIRINS/uv/bin/smat -t|grep "*"
-	echo -e UniVerse Old licencia..........:
-	cd $UVDIRINS
+	echo -e \\n UniVerse Old licencia..........:
+	cd $UVDIRINS/uv
 	bin/uvregen -z|head
 	
 	echo -e Contenido en / y /usr                        1>$UVLOG 2>$UVERR
@@ -1105,7 +1105,7 @@ _DirCfg_X_(){
 	cp -v /u2/usuarios/dsgenerico/.bash_profile /u2/usuarios/dsgenerico$sufijo/.bash_profile.1 1>>$DRLOG 2>>$DRERR
 	sed "s/qhome/qhome${sufijo}/g " /u2/usuarios/dsgenerico$sufijo/.bash_profile.1 > /u2/usuarios/dsgenerico$sufijo/.bash_profile 
 	sed "s/quiter/$gquiter/g " $LDIR/RepoLin/CreaUsuario > $QPATH/bin/CreaUsuario$sufijo.1 
-	sed "s/dsgenerico/dsgenerico$sufijo/g " $QPATH/bin/CreaUsuarioB.1 > $QPATH/bin/CreaUsuario$sufijo
+	sed "s/dsgenerico/dsgenerico$sufijo/g " $QPATH/bin/CreaUsuario$sufijo.1 > $QPATH/bin/CreaUsuario$sufijo
 	rm -vf $QPATH/bin/CreaUsuario$sufijo.1
 	rm -vf /u2/usuarios/dsgenerico$sufijo/.bash_profile.1
 	chown -vR $gquiter:$gquiter /u2/usuarios/dsgenerico$sufijo 1>>$DRLOG 2>>$DRERR

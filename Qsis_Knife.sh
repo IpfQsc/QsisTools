@@ -34,9 +34,9 @@ _Load_Var_(){
 	### Host & ip
 	HOST="NombreClienteDms o NombreClienteQae"
 	DMSnew="10.34.39.63"
-	QAEnew="no aplica"
+	QAEnew="no_aplica"
 	DMSold="10.34.39.120"
-	QAEold="no aplica"
+	QAEold="no_aplica"
 	### DmsTest o InstanciaX
 	QAWID=""
 	### UniVerse version a instalar
@@ -51,6 +51,9 @@ _Load_Var_(){
 	### UniVerse Numero de serie y usuarios
 	UVSERIE="1234567890"
 	UVUSERS="15"
+	### UniVerse Python
+	### UVPY="" Sin Python UVPY="1" con Python
+	UVPY="1"
 	### Libreria UniVerse para QGW
 	QGWLIBold="10.2"
 	QGWLIBnew="11.3.2"
@@ -963,32 +966,40 @@ _Licen_Uv_(){
 	echo -e Standard Output................: $UVLOG
 	echo -e Standard Error.................: $UVERR
 	echo -e UV serial number...............: $UVSERIE
-	echo -e UV number users................: $UVUSERS \\n
+	echo -e UV number users................: $UVUSERS
+	echo -e UV Python......................: $UVPY \\n
 	
 	if [ -d $UVDIR ];
 	then
 		cd $UVDIR
-		echo -e "Licencia UniVerse actual \\n"       1>>$UVLOG 2>>$UVERR
-		bin/uvregen -z                               1>>$UVLOG 2>>$UVERR
-		echo -e "Deteniendo UniVerse \\n"            1>>$UVLOG 2>>$UVERR
-		bin/uv -admin -stop -force                   1>>$UVLOG 2>>$UVERR
-		echo -e "Configurando licencia \\n"          1>>$UVLOG 2>>$UVERR
-		bin/uvregen -s $UVSERIE -u $UVUSERS          1>>$UVLOG 2>>$UVLOG
-		echo -e "Licencia UniVerse actual \\n"       1>>$UVLOG 2>>$UVERR
-		bin/uvregen -z                               1>>$UVLOG 2>>$UVERR
+		echo -e "Licencia UniVerse actual \\n"                   1>>$UVLOG 2>>$UVERR
+		bin/uvregen -z                                           1>>$UVLOG 2>>$UVERR
+		echo -e "Deteniendo UniVerse \\n"                        1>>$UVLOG 2>>$UVERR
+		bin/uv -admin -stop -force                               1>>$UVLOG 2>>$UVERR
+		echo -e "Configurando licencia "                         1>>$UVLOG 2>>$UVERR
+			if [ $UVPY ]
+				then
+					echo -e "Con Python \\n"                     1>>$UVLOG 2>>$UVERR
+					bin/uvregen -s $UVSERIE -u $UVUSERS -p PY:1  1>>$UVLOG 2>>$UVLOG
+				else
+					echo -e "Sin Python \\n"                     1>>$UVLOG 2>>$UVERR
+					bin/uvregen -s $UVSERIE -u $UVUSERS          1>>$UVLOG 2>>$UVLOG
+			fi
+		echo -e "Licencia UniVerse actual \\n"                   1>>$UVLOG 2>>$UVERR
+		bin/uvregen -z                                           1>>$UVLOG 2>>$UVERR
 		echo -e "\\n Licencia UniVerse actual \\n"
 		bin/uvregen -z
 		echo -e "\\n Codigo de configuracion \\n"
-		bin/uvregen -C                               1>>$UVLOG 2>>$UVERR
+		bin/uvregen -C                                           1>>$UVLOG 2>>$UVERR
 		grep Code $UVERR
 		
 		case $3 in
 			_Pst_Platform_DMS)
-				echo -e "\\n Iniciando UniVerse \\n" 1>>$UVLOG 2>>$UVERR
-				bin/uv -admin -start                 1>>$UVLOG 2>>$UVERR
+				echo -e "\\n Iniciando UniVerse \\n"             1>>$UVLOG 2>>$UVERR
+				bin/uv -admin -start                             1>>$UVLOG 2>>$UVERR
 				;;
-			_UniVerse_Install)
-				echo -e "\\n UniVerse detenido para activar \\n"  1>>$UVLOG 2>>$UVERR
+			_UniVerse_Install | _UniVerse_Upgrade)
+				echo -e "\\n UniVerse detenido para activar \\n" 1>>$UVLOG 2>>$UVERR
 				;;
 			*)
 				echo -e "\\n"

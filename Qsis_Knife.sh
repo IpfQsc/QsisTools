@@ -367,14 +367,14 @@ _QGW_Qae__(){
 	fi
 	cadena1="127.0.0.1"
 	cadena2=$QAEnew
-	cp -v $QPATH/qjava/conf/qae.json $QPATH/qjava/conf/qae.json.old 1>>$QGWLOG 2>>$QGWERR
+	cp -v $QPATH/qjava/conf/qae.json $LDIR/$DIRLOG/qae.json.bak 1>>$QGWLOG 2>>$QGWERR
+	echo -e "[sed 's/$cadena1/$cadena2/g ' $LDIR/$DIRLOG/qae.json > $LDIR/$DIRLOG/qae.json.mod] \\n" 1>>$QGWLOG 2>>$QGWERR
+	sed "s/$cadena1/$cadena2/g " $LDIR/$DIRLOG/qae.json.bak > $LDIR/$DIRLOG/qae.json.mod
 	ls -la $QPATH/qjava/conf/qae.json* 1>>$QGWLOG 2>>$QGWERR
-	echo -e "[sed 's/$cadena1/$cadena2/g ' $QPATH/qjava/conf/qae.json > $QPATH/qjava/conf/qae.json.mod] \\n" 1>>$QGWLOG 2>>$QGWERR
-	sed "s/$cadena1/$cadena2/g " $QPATH/qjava/conf/qae.json > $QPATH/qjava/conf/qae.json.mod
-	ls -la $QPATH/qjava/conf/qae.json* 1>>$QGWLOG 2>>$QGWERR
-	mv -vf $QPATH/qjava/conf/qae.json.mod $QPATH/qjava/conf/qae.json 1>>$QGWLOG 2>>$QGWERR
-	ls -la $QPATH/qjava/conf/qae.json* 1>>$QGWLOG 2>>$QGWERR
+	mv -vf $QPATH/qjava/conf/qae.json $QPATH/qjava/conf/qae.json.bak 1>>$QGWLOG 2>>$QGWERR
+	cp -v $LDIR/$DIRLOG/qae.json.mod $QPATH/qjava/conf/qae.json
 	chmod -vR 775 $QPATH/qjava/conf 1>>$QGWLOG 2>>$QGWERR
+	ls -la $QPATH/qjava/conf/qae.json* 1>>$QGWLOG 2>>$QGWERR
 	cat $QPATH/qjava/conf/qae.json |grep mongoServer
 	cd $LDIR
 	echo -e "==== Completed QGW Qae ====\\n"
@@ -1386,19 +1386,14 @@ _RepoLin2_(){
 	echo -e Standard Error.................: $RRERR
 	echo -e Rclone command.................: $RRCMD \\n
 	mkdir -p $DIRLOG
-	if [ -d $LDIR/RepoLin ];
-		then
-			echo -e "Existe $LDIR/RepoLin no descargamos     \\n"
-		else
-			echo -e "No Existe $LDIR/RepoLin descargamos     \\n"
-			_TstRclone                                         1>$RRLOG 2>$RRERR
-			echo -e "Descargando QDBLiveLx                   \\n"   
-			_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
-			echo -e "Descargando setup_plataforma.properties \\n"   
-			_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
-			echo -e "Descargando CreaUsuario                 \\n"   
-			_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
-	fi
+	echo -e "No Existe $LDIR/RepoLin descargamos     \\n"
+	_TstRclone                                         1>$RRLOG 2>$RRERR
+	echo -e "Descargando QDBLiveLx                   \\n"   
+	_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
+	echo -e "Descargando setup_plataforma.properties \\n"   
+	_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
+	echo -e "Descargando CreaUsuario                 \\n"   
+	_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
 	ls -lha RepoLin
 	du -hs RepoLin
 	date
@@ -4079,7 +4074,7 @@ _ScriptLog
 ###			2.-Descarga UniVerse ($universever), qibk y libs.zip.
 ###			3.-Incorpora en QGW las librerias que falten.
 ###			4.-Extrae informacion de la configuracion de UniVerse.
-###		Cuando posteriormente ejecutemos el proceos _UniVerse_Install estos pasos los omitira.
+###		Cuando posteriormente ejecutemos el proceos _UniVerse_Install o _UniVerse_Upgrade estos pasos los omitira.
 #_UniVerse_Downld_
 
 ### proceso INSTALA UNIVERSE [descarga software, aparta Uv_old, trigers , pargen , qibk , incorpora librerias UniVerse en QGW , QGW conf , licencia]

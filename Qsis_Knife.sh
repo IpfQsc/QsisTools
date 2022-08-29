@@ -34,13 +34,14 @@ _Load_Var_(){
 	### Host & ip
 	HOST="NombreClienteDms o NombreClienteQae"
 	DMSnew="10.34.39.63"
-	QAEnew="no_aplica"
-	DMSold="10.34.39.120"
+	QAEnew="10.34.39.64"
+	DMSold="no_aplica"
 	QAEold="no_aplica"
 	### DmsTest o InstanciaX
 	QAWID=""
 	### UniVerse version a instalar
-	universever="uv_linux_11.3.4.9004_64bit.zip"
+	universever="uv_linux_11.3.4.9005_64bit.zip"
+	#universever="uv_linux_11.3.4.9004_64bit.zip"
 	#universever="uv_linux_11.3.4_64bit.zip"
 	#universever="uv_linux_11.3.2.7001_64bit.zip"
 	#universever="uv_linux_11.3.1.6025_64bit.zip"

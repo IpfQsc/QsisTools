@@ -60,7 +60,7 @@ _Load_Var_(){
 	QGWLIBnew="11.3.2"
 	### En los procesos de limpieza de Estadisticas del Pool y Sucesos de Mensajes
 	### fecha a partir de la que conservamos registros (eliminamos los anteriores a esta fecha).
-	MAXDATE="2021-03-01"
+	MAXDATE="2022-08-01"
 	### Email notificacion
 	email="israel.pascual@quiter-sc.com"
 	#################### Parametros fijos o autogenerados NO modificar
@@ -1069,6 +1069,9 @@ _CfgSufijo(){
 		echo -e existe usuario $gquiter saltamos la configuracion del sistema para la instancia $sufijo \\n
 	else
 		echo -e no existe usuario $gquiter continuamos con la configuracion del sistema para la instancia $sufijo \\n
+		ls -lha /usr/uv/UV.ACCOUNT 1>$BPLOG 2>$BPERR
+		chmod -v a+rw /usr/uv/UV.ACCOUNT 1>>$BPLOG 2>>$BPERR
+		ls -lha /usr/uv/UV.ACCOUNT 1>>$BPLOG 2>>$BPERR
 		cp -rpv /u2/usuarios/quiter /u2/usuarios/$gquiter 1>$BPLOG 2>$BPERR
 		sed "s/qhome/qhome$sufijo/g " /u2/usuarios/quiter/.bash_profile > /u2/usuarios/$gquiter/.bash_profile
 		useradd -d /u2/usuarios/$gquiter $gquiter 1>>$BPLOG 2>>$BPERR
@@ -1153,7 +1156,7 @@ _Ko_Qae___(){
 	echo -e Sufijo.........................: $sufijo \\n
 	mkdir -p $DIRLOG
 	cd $GNDIR
-	#modificar PAR_GEN dependiendo de si es plataformando nuevo o cambio de linux
+	#modificar PAR_GEN para desactivar el clip en las pantallas de la aplicacion
 	echo "WHO"                  >  $QCMD
 	echo "SH -c pwd"            >> $QCMD
 	echo "DATE"                 >> $QCMD
@@ -1161,7 +1164,7 @@ _Ko_Qae___(){
 	echo ""                     >> $QCMD
 	echo "DATE"                 >> $QCMD
 	echo "SERVICIOS.APLICACION" >> $QCMD
-	echo "QAE"                  >> $QCMD
+	echo "6"                    >> $QCMD
 	echo ""                     >> $QCMD
 	echo "DATE"                 >> $QCMD
 	echo "SERVICIOS.APLICACION" >> $QCMD
@@ -2957,12 +2960,15 @@ _Q_ParGen_(){
 			#echo "ED PAR_GEN GEN"      >> $QCMD
 			# Si no tenemos firewall activo dejamos las transferencias ftp como estaban
 			# Si tenemos firewall activo mejor cambiar las transferencias ftp a modo activo
+			#echo "ED PAR_GEN GEN"      >> $QCMD
 			#echo "41"                  >> $QCMD
 			#echo "DE"                  >> $QCMD
 			#echo "I"                   >> $QCMD
 			#echo "1"                   >> $QCMD
 			#echo ""                    >> $QCMD
+			#echo "FI"                  >> $QCMD
 			# Si cambia de ip el Dms
+			#echo "ED PAR_GEN GEN"      >> $QCMD
 			#echo "42"                  >> $QCMD
 			#echo "DE"                  >> $QCMD
 			#echo "I"                   >> $QCMD
@@ -4106,8 +4112,8 @@ _ScriptLog
 ### 	Logica despues de refrescar las cuentas principales del DmsPruebas con DmsProduccion
 ### 	Generalmente el refresco de las cuentas lo hace el cliente.
 ### 	El proceso incluye:
-###			funcion que podemos activar si tenemos que hacer el refresco nosotros
-###			funcion que podemos activar si queremos desactivar Qae
+###			funcion que podemos activar si tenemos que hacer el refresco nosotros. Rsync de las  cuentas principales.
+###			funcion que podemos activar si queremos desactivar Qae.
 ### 	Configurar en Load_Var() el identificador de apliacion QAWID y la clave de ftpq en DmsPruebas
 #_Activar_DmsTest_
 

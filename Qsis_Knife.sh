@@ -2364,7 +2364,7 @@ _UV__Inst_(){
 	echo -e Standard Error.................: $UVERR \\n
 	mkdir -p $DIRLOG 
 	unzip -o RepoLin/$universever 1>$UVLOG 2>$UVERR
-	chmod -vR 777 universe*
+	chmod -vR 777 universe*       1>>$UVLOG 2>>$UVERR
 	cd universe*
 	chmod -v 775 *.sh 1>>$UVLOG 2>>$UVERR
 	./1-instalar.sh   1>>$UVLOG 2>>$UVERR

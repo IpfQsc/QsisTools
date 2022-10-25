@@ -49,6 +49,7 @@ _Load_Var_(){
 	#universever="uv_linux_11.2.5_32bit.zip"
 	#universever="uv_linux_11.2.4_64bit.zip"
 	#universever="uv_linux_11.1.14.zip"
+	#universever="uv_linux_12.2.1.2000_64bit.zip"
 	### UniVerse Numero de serie y usuarios
 	UVSERIE="1234567890"
 	UVUSERS="15"
@@ -2363,21 +2364,22 @@ _UV__Inst_(){
 	echo -e Standard Error.................: $UVERR \\n
 	mkdir -p $DIRLOG 
 	unzip -o RepoLin/$universever 1>$UVLOG 2>$UVERR
+	chmod -vR 777 universe*
 	cd universe*
 	chmod -v 775 *.sh 1>>$UVLOG 2>>$UVERR
 	./1-instalar.sh   1>>$UVLOG 2>>$UVERR
 	./2-licenciar.sh  1>>$UVLOG 2>>$UVERR
 	./3-configurar.sh 1>>$UVLOG 2>>$UVERR
-	cp -v uv.*/uv.load.log $LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_uv.load.log 1>>$UVLOG 2>>$UVERR
+	cp -vp uv.*/uv.load.log $LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_uv.load.log 1>>$UVLOG 2>>$UVERR
 	chmod -v a+rw /usr/uv/SYS.MESSAGE   1>>$UVLOG 2>>$UVERR
 	chmod -v a+rw /usr/uv/UV.ACCESS     1>>$UVLOG 2>>$UVERR
 	chmod -v a+rw /usr/uv/UV.ACCOUNT    1>>$UVLOG 2>>$UVERR
 	chmod -v u+s /usr/uv/bin/list_readu 1>>$UVLOG 2>>$UVERR
-	/bin/cp -vf /usr/uv/terminfo/w/wyse60 /usr/share/terminfo/w/wyse60 1>>$UVLOG 2>>$UVERR
+	/bin/cp -vpf /usr/uv/terminfo/w/wyse60 /usr/share/terminfo/w/wyse60 1>>$UVLOG 2>>$UVERR
 	ls -la /usr/share/terminfo/w/wyse60* 1>>$UVLOG 2>>$UVERR
-	cp -v $UVDIR/uvodbc.config $UVDIR/uvodbc.config.bak 1>>$UVLOG 2>>$UVERR
+	cp -vp $UVDIR/uvodbc.config $UVDIR/uvodbc.config.bak 1>>$UVLOG 2>>$UVERR
 	echo "MAXFETCHBUFF = 2097152" >>$UVDIR/uvodbc.config
-	cp -v /usr/unishared/unirpc/unirpcservices /usr/unishared/unirpc/unirpcservices.bak 1>>$UVLOG 2>>$UVERR
+	cp -vp /usr/unishared/unirpc/unirpcservices /usr/unishared/unirpc/unirpcservices.bak 1>>$UVLOG 2>>$UVERR
 	echo "qbics /usr/uv/bin/uvapi_server * TCP/IP 0 28800" >>/usr/unishared/unirpc/unirpcservices
 	cd $UVDIR
 	echo "LIST UV_USERS NOPAGE"         > $QCMD

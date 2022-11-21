@@ -1530,7 +1530,7 @@ _Q_Proces_(){
 	#$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
 	#tail -n 11 $UVLOG
 	#
-	cd $LDIR
+	#cd $LDIR
 	echo -e "\\n==== Completado procesos PostPlataformado $sufijo ==== \\n"
 }
 
@@ -2382,21 +2382,57 @@ _UV__Inst_(){
 	cp -vp /usr/unishared/unirpc/unirpcservices /usr/unishared/unirpc/unirpcservices.bak 1>>$UVLOG 2>>$UVERR
 	echo "qbics /usr/uv/bin/uvapi_server * TCP/IP 0 28800" >>/usr/unishared/unirpc/unirpcservices
 	cd $UVDIR
-	echo "LIST UV_USERS NOPAGE"         > $QCMD
-	# lo hacemos uno a uno porque todos juntos si algun usuario falta no entra ninguno
-	echo "GRANT CONNECT TO rootquiter;" >>$QCMD
-	echo "GRANT CONNECT TO aquiter;"    >>$QCMD
-	echo "GRANT CONNECT TO quiter;"     >>$QCMD
-	echo "GRANT CONNECT TO gateway;"    >>$QCMD
-	echo "GRANT CONNECT TO qbi_user;"   >>$QCMD
-	echo "GRANT DBA TO rootquiter;"     >>$QCMD
-	echo "GRANT DBA TO aquiter;"        >>$QCMD
-	echo "GRANT DBA TO quiter;"         >>$QCMD
-	echo "GRANT DBA TO gateway;"        >>$QCMD
-	echo "GRANT DBA TO qbi_user;"       >>$QCMD
-	echo "LIST UV_USERS NOPAGE"         >>$QCMD
-	$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
-	cd /usr/uv
+	case $universever in
+		uv_linux_12*)
+			# Para UniVerse_12 añadimos aquiter en los grupos de administracion de UniVerse
+			usermod -G uvadm,uvdb,uvsql,quiter aquiter
+			
+			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvsql
+			cd $UVDIR
+			echo "DATE"                         > $QCMD
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD
+			# lo hacemos uno a uno porque todos juntos si algun usuario falta no entra ninguno
+			echo "GRANT CONNECT TO rootquiter;" >>$QCMD
+			echo "GRANT CONNECT TO aquiter;"    >>$QCMD
+			echo "GRANT CONNECT TO quiter;"     >>$QCMD
+			echo "GRANT CONNECT TO gateway;"    >>$QCMD
+			echo "GRANT CONNECT TO qbi_user;"   >>$QCMD
+			echo "GRANT DBA TO rootquiter;"     >>$QCMD
+			echo "GRANT DBA TO aquiter;"        >>$QCMD
+			echo "GRANT DBA TO quiter;"         >>$QCMD
+			echo "GRANT DBA TO gateway;"        >>$QCMD
+			echo "GRANT DBA TO qbi_user;"       >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			su uvsql -c "$UVCMD <$QCMD"
+			tail -n 10 $UVLOG
+			;;
+		*)
+			echo "DATE"                         > $QCMD
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD
+			# lo hacemos uno a uno porque todos juntos si algun usuario falta no entra ninguno
+			echo "GRANT CONNECT TO rootquiter;" >>$QCMD
+			echo "GRANT CONNECT TO aquiter;"    >>$QCMD
+			echo "GRANT CONNECT TO quiter;"     >>$QCMD
+			echo "GRANT CONNECT TO gateway;"    >>$QCMD
+			echo "GRANT CONNECT TO qbi_user;"   >>$QCMD
+			echo "GRANT DBA TO rootquiter;"     >>$QCMD
+			echo "GRANT DBA TO aquiter;"        >>$QCMD
+			echo "GRANT DBA TO quiter;"         >>$QCMD
+			echo "GRANT DBA TO gateway;"        >>$QCMD
+			echo "GRANT DBA TO qbi_user;"       >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
+			tail -n 10 $UVLOG
+			;;
+	esac
+	cd $UVDIR
+	$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR
 	echo -e "UniVerse Info"
 	bin/uvregen -z
 	echo -e "UniVerse Build Number"
@@ -2484,6 +2520,72 @@ _UV__Upgr_(){
 	fi
 	cd $LDIR
 	echo -e "\\n==== Completado UniVerse Upgrade ==== \\n"
+}
+
+_UV__12___(){
+	
+	cd $LDIR
+	LOGDATE=`date +\%F`
+	LOGTIME=`date +\%T`
+	DIRLOG="$3_$1_$2_${FUNCNAME[0]}"
+	UVLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UV12_${sufijo}_stdout.log"
+	UVERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UV12_${sufijo}_stderr.log"
+	QCMD="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_Quiter$sufijoCmd.txt"
+	echo -e $separador 
+	mkdir -p $DIRLOG
+	echo -e "==== [$1/$2] procesos UV12 $sufijo ===="
+	echo -e Date...........................: `date`
+	echo -e Run dir........................: `pwd`
+	echo -e Standard Output................: $UVLOG
+	echo -e Standard Error.................: $UVERR
+	echo -e UniVerse Exe...................: $UVCMD
+	echo -e UniVerse Commands..............: $QCMD
+	echo -e Quiter.Path....................: $QPATH
+	echo -e Sufijo.........................: $sufijo \\n
+	
+	case $universever in
+		uv_linux_12*)
+			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm uvsql y uvdb
+			# Aunque el instalador de UniVerse los agrega, al ejecutar QSIS.INI.UV sobreescribe UV.LOGIN sin ellos
+			# Como ultimo paso recuperamos el UV.LOGIN que el instalador genero en &SAVEDLISTS&
+			# Cuando QSIS.INI.UV agrege los usuarios uvadm uvsql y uvdb podremos desactivar esto
+			cd $UVDIR
+			$UVCMD "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING"
+			
+			# Para UniVerse_12 añadimos aquiter en los grupos de administracion de UniVerse
+			usermod -G uvadm,uvdb,uvsql,quiter aquiter
+			
+			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvsql
+			cd $UVDIR
+			echo "DATE"                         > $QCMD
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD
+			# lo hacemos uno a uno porque todos juntos si algun usuario falta no entra ninguno
+			echo "GRANT CONNECT TO rootquiter;" >>$QCMD
+			echo "GRANT CONNECT TO aquiter;"    >>$QCMD
+			echo "GRANT CONNECT TO quiter;"     >>$QCMD
+			echo "GRANT CONNECT TO gateway;"    >>$QCMD
+			echo "GRANT CONNECT TO qbi_user;"   >>$QCMD
+			echo "GRANT DBA TO rootquiter;"     >>$QCMD
+			echo "GRANT DBA TO aquiter;"        >>$QCMD
+			echo "GRANT DBA TO quiter;"         >>$QCMD
+			echo "GRANT DBA TO gateway;"        >>$QCMD
+			echo "GRANT DBA TO qbi_user;"       >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			echo "LIST UV_USERS NOPAGE"         >>$QCMD
+			echo "DATE"                         >>$QCMD			
+			su uvsql -c "$UVCMD <$QCMD"
+			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR
+			tail -n 11 $UVLOG
+			;;
+		*)
+			echo "DATE"                >> $QCMD
+			;;
+	esac
+	
+	cd $LDIR
+	echo -e "\\n==== Completado procesos PostPlataformado UV12 $sufijo ==== \\n"
+	
 }
 
 _QsCfgPlt_(){
@@ -2928,6 +3030,24 @@ _Q_Triger_(){
 	$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
 	cd $LDIR
 	tail -n 11 $UVLOG
+	
+	# En version UniVerse_12 QSIS.PREPBATCH quita uvadm, uvdb y uvsql de UV.LOGIN
+	case $universever in
+		uv_linux_12*)
+			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm uvsql y uvdb
+			# Aunque el instalador de UniVerse los agrega, al ejecutar QSIS.INI.UV sobreescribe UV.LOGIN sin ellos
+			# Como ultimo paso recuperamos el UV.LOGIN que el instalador genero en &SAVEDLISTS&
+			# Cuando QSIS.INI.UV agrege los usuarios uvadm uvsql y uvdb podremos desactivar esto
+			cd $UVDIR
+			$UVCMD "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING" 1>>$UVLOG 2>>$UVERR
+			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR              
+			;;
+		*)
+			cd $UVDIR
+			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR              
+			;;
+	esac
+	
 	echo -e "\\n==== Completado despliegue Triggers $sufijo ==== \\n"
 }
 
@@ -3386,7 +3506,7 @@ _SysUsers_(){
 	else
 		echo 'No-existe aquiter' 1>>$USRLOG 2>>$USRERR
 		echo 'Creando aquiter  ' 1>>$USRLOG 2>>$USRERR
-		useradd -d /home/aquiter aquiter 1>>$USRLOG 2>>$USRERR
+		-d /home/aquiter aquiter 1>>$USRLOG 2>>$USRERR
 		echo $aquiterpass | passwd aquiter --stdin 1>>$USRLOG 2>>$USRERR
 	fi
 	echo -e "PS1='[aquiter@$HOST \W]$ '" >> /home/aquiter/.bashrc

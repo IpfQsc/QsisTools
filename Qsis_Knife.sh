@@ -3039,8 +3039,12 @@ _Q_Triger_(){
 			# Como ultimo paso recuperamos el UV.LOGIN que el instalador genero en &SAVEDLISTS&
 			# Cuando QSIS.INI.UV agrege los usuarios uvadm uvsql y uvdb podremos desactivar esto
 			cd $UVDIR
-			$UVCMD "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING" 1>>$UVLOG 2>>$UVERR
-			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR              
+			pwd  >> $UVLOG 
+			date >> $UVLOG 
+			echo -e "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING" 1>>$UVLOG 
+			$UVCMD "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING"  1>>$UVLOG 2>>$UVERR
+			echo -e "CT VOC UV.LOGIN" 1>>$UVLOG
+			$UVCMD "CT VOC UV.LOGIN"  1>>$UVLOG 2>>$UVERR              
 			;;
 		*)
 			cd $UVDIR
@@ -3506,7 +3510,7 @@ _SysUsers_(){
 	else
 		echo 'No-existe aquiter' 1>>$USRLOG 2>>$USRERR
 		echo 'Creando aquiter  ' 1>>$USRLOG 2>>$USRERR
-		-d /home/aquiter aquiter 1>>$USRLOG 2>>$USRERR
+		useradd -d /home/aquiter aquiter 1>>$USRLOG 2>>$USRERR
 		echo $aquiterpass | passwd aquiter --stdin 1>>$USRLOG 2>>$USRERR
 	fi
 	echo -e "PS1='[aquiter@$HOST \W]$ '" >> /home/aquiter/.bashrc
@@ -4228,7 +4232,13 @@ _ScriptLog
 ###		Asumimos que Uv_old esta detenido.
 ###		El proceso deja Uv_new detenido para activar.
 #_UniVerse_Upgrade
+### Si tiene QBI activado despues del UPGRADE tenemos que ejecutar VERIFY
 #_Qbi_Vrfy_
+### Si tiene instancia-B  despues del UPGRADE tenemos que procesar instancia-B, asignamos la letra de la instancia a procesar.
+#sufijo="B"
+#QPATH="/u2/quiter$sufijo"
+#_UpdAccnt_ 04 08 _UniVerse_Upgrade
+#_Q_Triger_ 05 08 _UniVerse_Upgrade
 
 ### proceso ACTIVAR DMSTEST [trigers, pargen, desactivar Qae]
 ### 	Logica despues de refrescar las cuentas principales del DmsPruebas con DmsProduccion

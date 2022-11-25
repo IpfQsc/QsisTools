@@ -1,0 +1,687 @@
+SUBROUTINE QSIS.INI.UV
+*******************************************************************************
+*
+*   Proceso que INICIALIZA universe para quiter
+*
+*   Version   06.11    Date   16-11-2006
+*  Version  7.0      Date  12-2008
+*  Version  8.0      Date  04-2012
+*
+*
+*   (c) Copyright 2004 Quiter Servicios Informaticos S.L.
+*
+* PARAMETRO FORCE para que se ejecute incluso aunque informe que no esta en el GEN
+*                 util en caso de reinstalacion de uv, cuando a pesar de estar en
+*                 el GEN, no nos informa correctamente
+*
+*******************************************************************************
+   NOM.SUB='QSIS.INI.UV'
+   IF FIELD(SENTENCE(),' ',1,1)= 'RUN' THEN
+         NPARAM = 4
+      END ELSE
+         NPARAM = 2
+   END
+   cmd0 = FIELD(TRIM(@PARASENTENCE), " ", NPARAM, 999)
+   FORCE = 0
+   LOOP
+      WHILE cmd0 # "" DO
+         id = FIELD(cmd0, " ", 1)
+         cmd0 = FIELD(cmd0, " ", 2, 999)
+
+         BEGIN CASE
+            CASE id="FORCE"
+               FORCE = 1
+         END CASE
+   REPEAT
+
+   MSGCAB=""
+   MSGSUB=""
+   PRINT "*** Se va a preparar universe para Quiter "
+   PRINT "*** Usted esta conectado como : ":@LOGNAME
+   PRINT "*** Usted esta conectado desde: ":@WHO
+   PRINT "*** Usted esta utilizando tty : ":@TTY
+   *IF UPCASE(@WHO) NE "GEN4GL" THEN CRT "Debe lanzarse desde GEN4GL" ; STOP
+   IF SYSTEM(27) NE 0 THEN CRT "Usted esta conectado como: ":@LOGNAME:" y debe lanzarse como administrador/root" ; STOP
+   * Nos aseguramos de hacer el UPDATE.ACCOUNT por si es un cambio de servidor en lugar de un plataformado y tenemos distinta version de UV
+   PRINT "==========================="
+   PRINT "#Actualizando VOC en GEN4GL"
+   EXECUTE "UPDATE.ACCOUNT"
+   EXECUTE "COPYI FROM &TEMP& TO VOC UP OVERWRITING" CAPTURING NULL
+   * Ahora podemos hacer el include con seguridad de tener acceso a los QSIS tanto en cambio como plataformado
+   INCLUDE BP QSIS.INCLUDE
+   MSGCAB<-1>=CHAR(10)
+   MSGCAB<-1>="================================"
+   MSGCAB<-1>="Resumen ejecucion ":@PARASENTENCE
+   MSGCAB<-1>="================================"
+   MSGCAB<-1>="#Informacion de entorno:"
+   MSGCAB<-1>="*** S.O.       =":qsis.SO
+   MSGCAB<-1>="*** HOSTNAME   =":SYSTEM(sys.hostname)
+   MSGCAB<-1>="*** SEPARADOR  =":qsis.BARRA
+   MSGCAB<-1>="*** YO         =":YO
+   MSGCAB<-1>="*** UVHOME     =":SYSTEM(sys.uvhome)
+   MSGCAB<-1>="*** UV.ROOT    =":UV.ROOT
+   GOSUB DONDE
+   MSGCAB<-1>="*** QUITERHOME =":QUITERHOME
+   MSGCAB<-1>="*** GENHOME    =":CAMINO
+   MSGCAB<-1>="*** UNIDAD-NT  =":LETRA
+   MSGCAB<-1>="*** SUFIJO     =":SUFIJO
+   MSGCAB<-1>="================================"
+   MSGCAB<-1>="#Procesos realizados:"
+   CRT CHANGE(MSGCAB,CHAR(254),CHAR(10))
+   GOSUB CREACUENTAS
+   GOSUB UVLOGIN
+   GOSUB DICTDICTF2
+   GOSUB MSGTEXT
+*   Modifica timeout rpc
+*   GOSUB UNIDIR
+   GOSUB TRIMTRI2
+   GOSUB WYSE60
+*   GOSUB DEVICE
+   GOSUB BLKMAX
+   GOSUB MFILES
+   GOSUB NUSERS
+   GOSUB VERTIMEOUT
+
+   *** Configuramos UniVerse el PARGEN lo configura quitersetup, si es cambio tiene que venir a la misma ruta
+   *** GOSUB PARGEN
+
+   * No puede hacerlos antes ya que puedo no tener las cuentas creadas en caso de cambio
+   PRINT "#####Compilar utilidades QSIS "
+   EXECUTE "BASIC BP QSIS.INSTALA"
+   EXECUTE "RUN BP QSIS.INSTALA"
+   PRINT "#####Ejecutar QSIS.PREPBATCH"
+   EXECUTE "RUN BP QSIS.PREPBATCH"
+
+   * Lo ultimo el uvregen
+   GOSUB UVREGEN
+   EXECUTE "LOGTO GEN4GL"
+
+   CRT CHANGE(MSGCAB,CHAR(254),CHAR(10))
+   CRT CHANGE(MSGSUB,CHAR(254),CHAR(10))
+
+FIN:
+   RETURN
+
+
+CREACUENTAS:
+      PRINT "#####Creando cuentas "
+      PRINT "*** UV.ACCOUNT =":UV.ROOT:qsis.BARRA:'UV.ACCOUNT'
+      MSGSUB<-1>="#####Creadas cuentas "
+
+      OPENPATH UV.ROOT:qsis.BARRA:'UV.ACCOUNT' TO UVACCT.FILE ELSE
+         ** "Unable to open UVACCT file."
+         PRINT ; CALL *UVPRINTMSG(85303,"UV.ACCOUNT")
+         process.status = -1
+         stop
+      END
+
+      CUENTA = "GEN4GL"
+      CUENTASUFIJO = "GEN4GL":SUFIJO
+      GOSUB WCUENTA
+      CUENTA = "COMERCIAL"
+      CUENTASUFIJO = "COMERCIAL":SUFIJO
+      GOSUB WCUENTA
+      CUENTA = "CONTA5"
+      CUENTASUFIJO = "CONTA5":SUFIJO
+      GOSUB WCUENTA
+      CUENTA = "POSVENTA5"
+      CUENTASUFIJO = "POSVENTA5":SUFIJO
+      GOSUB WCUENTA
+      CUENTA = "CONEXION"
+      CUENTASUFIJO = "CONEXION":SUFIJO
+      GOSUB WCUENTA
+      CUENTA = "VISTA"
+      CUENTASUFIJO = "VISTA":SUFIJO
+      GOSUB WCUENTAV
+      CUENTA = "BBADAPTER"
+      CUENTASUFIJO = "BBADAPTER":SUFIJO
+      GOSUB WCUENTAV
+
+      CLOSE UVACCT.FILE
+
+RETURN
+
+WCUENTA:
+      CAMINO= QUITERHOME:CUENTA
+      Dato=""
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>= CAMINO
+
+      WRITE Dato ON UVACCT.FILE, CUENTASUFIJO ELSE CRT "Error al escribir cuenta ":CUENTASUFIJO ; STOP
+      MSGSUB<-1>="*** ":CUENTASUFIJO:SPACE(10-LEN(CUENTASUFIJO)):" =":CAMINO
+      PRINT "*** ":CUENTASUFIJO:" =":CAMINO
+RETURN
+
+WCUENTAV:
+      CAMINO= QUITERHOME:CUENTA
+      Dato=""
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>= CAMINO
+      Dato<-1>=" "
+      Dato<-1>=" "
+      Dato<-1>="YES"
+
+      WRITE Dato ON UVACCT.FILE, CUENTASUFIJO ELSE CRT "Error al escribir cuenta ":CUENTASUFIJO ; STOP
+      MSGSUB<-1>="*** ":CUENTASUFIJO:SPACE(10-LEN(CUENTASUFIJO)):" =":CAMINO
+      PRINT "*** ":CUENTASUFIJO:" =":CAMINO
+RETURN
+
+DONDE:
+      IF SYSTEM(91) THEN
+              * NT
+              cmd='DOS /c "CD"'
+         END ELSE
+              * Unix
+              cmd='SH -c "pwd"'
+      END
+
+* Cuando cambiamos de 9.5 a 10.0 no tenemos todavia OS.EXEC
+*       IF OS.TYPE NE "UNIX" THEN
+*             cmd = OS.EXEC:"'CD'"
+*          END ELSE
+*             cmd = OS.EXEC:"'pwd'"
+*       END
+
+      EXECUTE cmd CAPTURING CAMINO
+
+      POS=INDEX(UPCASE(CAMINO),'GEN4GL',1)
+      IF POS#0 THEN
+           QUITERHOME = OCONV(CAMINO[1,POS-1],'G 1')
+         END ELSE
+           CRT "*** ATENCION!!! debe ejecutarse desde GEN4GL!"
+           PRINT "*** CMD = ":cmd
+           PRINT "*** CAMINO = ":CAMINO
+           PRINT "*** POS = ":POS
+           IF FORCE#1 THEN STOP
+      END
+      LETRA=LEFT(QUITERHOME,2)
+      SUFIJO=UPCASE(TRIM(OCONV(QUITERHOME[POS-2,POS-2],'G 1'),"/"))
+      SUFIJO=TRIM(SUFIJO,"\")
+      IF SUFIJO = "R" THEN SUFIJO=""
+
+RETURN
+
+UVLOGIN:
+      OPENPATH UV.ROOT:qsis.BARRA:'VOC' TO VOC.UV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"VOC.UV")
+         process.status = -1
+         stop
+      END
+      Dato=""
+      Dato<-1>= "PA"
+      Dato<-1>= "DATE.FORMAT ON"
+      Dato<-1>= "PTERM KILL OFF"
+      Dato<-1>= "PTERM INTR ":CHAR(127)
+      Dato<-1>= "PTERM CRMODE -ICRNL CASE NOINVERT ECHO NOCTRL"
+      Dato<-1>= "SETPTR 0,132,66,0,0,,FORM 0,NOHEAD,BRIEF,NOEJECT"
+      Dato<-1>= "IF @TTY = 'phantom' THEN ABORT"
+      Dato<-1>= "IF @TTY = 'console' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'Administrador' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'Administrator' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'Aquiter' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'aquiter' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'root' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'rootquiter' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'uvsql' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'uvadm' THEN ABORT"
+      Dato<-1>= "IF @LOGNAME = 'uvdb' THEN ABORT"
+      Dato<-1>= "AUTOLOGOUT 210"
+
+      CRT "#####Grabando UV.LOGIN"
+      WRITE Dato ON VOC.UV, "UV.LOGIN" ELSE CRT "Error al escribir UV.LOGIN " ; STOP
+      MSGSUB<-1>="####Grabado    UV.LOGIN"
+      CLOSE VOC.UV
+RETURN
+
+DICTDICTF2:
+      OPENPATH UV.ROOT:qsis.BARRA:'DICT.DICT' TO DICTDICT ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"DICT.DICT")
+         process.status = -1
+         stop
+      END
+      READ Registro FROM DICTDICT, "F2" ELSE CRT "No puedo leer F2 en DICT.DICT"; STOP
+      Registro<5>="8R"
+      CRT "#####Grabando DICT.DICT F2"
+      WRITE Registro ON DICTDICT, "F2" ELSE CRT "No puedo grabar F2 en DICT.DICT"; STOP
+      MSGSUB<-1>="####Grabado    DICT.DICT F2"
+      CLOSE DICTDICT
+RETURN
+
+MSGTEXT:
+      ** Tenemos que grabar MSGTEXT solo en los NT
+   IF OS.TYPE NE "UNIX" THEN
+
+      ****** Averiguar nombre maquina
+      cmd = OS.EXEC:"'net config workstation'"
+      EXECUTE cmd,OUT>SCREEN
+      CADENA=TRIM(SCREEN<1>:"\\")
+      NOMBRE.MAQUINA=FIELD(CADENA,"\",3)
+      *PRINT NOMBRE.MAQUINA
+
+      ****** Crea puntero a fichero &UFD&
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      Registro=""
+      Registro<-1> = "F"
+      Registro<-1> = UV.ROOT
+      Registro<-1> = UV.ROOT:qsis.BARRA:'D_UFD'
+      WRITE Registro ON f.voc, "QSIS.DIRUV" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      OPEN "QSIS.DIRUV" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"DIRUV")
+         process.status = -1
+         stop
+      END
+
+      READ Registro FROM DIRUV, "MSG.TEXT" ELSE CRT "No puedo leer MSG.TEXT en DIR.UV"; STOP
+      CRT "#####Modificando MSG.TEXT"
+      FINDSTR "TLS0001" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         *CRT Registro<FOUND>
+         Registro<FOUND>="TLS0001 Welcome to the IBM UniVerse Telnet Server ":NOMBRE.MAQUINA:".\r\n"
+         WRITE Registro ON DIRUV, "MSG.TEXT" ELSE CRT "No puedo grabar F2 en MSG.TEXT"; STOP
+         CRT "Nombre Maquina: ":NOMBRE.MAQUINA
+         CLOSE DIRUV
+      END
+
+      EXECUTE "DELETE VOC QSIS.DIRUV" CAPTURING NUL
+   END
+RETURN
+
+* UNIDIR:
+*       open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+*       * Creamos link a UV.UNIDIR
+*       Dato=""
+*       Dato<-1>="F"
+*       Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"..":qsis.BARRA:"unishared":qsis.BARRA:"unirpc"
+*       Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"D_UFD"
+*
+*       WRITE Dato ON f.voc, "QSIS.UNIDIR" ELSE CRT "Error al escribir" ; STOP
+*       CLOSE f.voc
+*
+*       OPEN "QSIS.UNIDIR" TO DIRUV ELSE
+*          PRINT ; CALL *UVPRINTMSG(85303,"UNIDIR")
+*          process.status = -1
+*          stop
+*       END
+*
+*       READ Registro FROM DIRUV, "unirpcservices" ELSE CRT "No puedo leer unirpcservices en UNIDIR"; STOP
+*
+*       FINDSTR "uvcs" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*         GOSUB CAMBIA3600
+*       END
+*       FINDSTR "defcs" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*          GOSUB CAMBIA3600
+*       END
+*       FINDSTR "uvfilefix" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*          GOSUB CAMBIA3600
+*       END
+*       FINDSTR "uvnet" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*          GOSUB CAMBIA3600
+*       END
+*       FINDSTR "uvserver" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*          GOSUB CAMBIA3600
+*       END
+*       FINDSTR "uvdrsrv" IN Registro SETTING FOUND ELSE FOUND = 0
+*       IF FOUND THEN
+*          GOSUB CAMBIA3600
+*       END
+*
+*       CLOSE DIRUV
+*       CRT "#####Modificar unirpcservices a 14400"
+*       EXECUTE "CT QSIS.UNIDIR unirpcservices"
+*       EXECUTE "DELETE VOC QSIS.UNIDIR" CAPTURING NULL
+*
+* RETURN
+
+
+VERTIMEOUT:
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      * Creamos link a UV.UNIDIR
+      Dato=""
+      Dato<-1>="F"
+      Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"..":qsis.BARRA:"unishared":qsis.BARRA:"unirpc"
+      Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"D_UFD"
+
+      WRITE Dato ON f.voc, "QSIS.UNIDIR" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      OPEN "QSIS.UNIDIR" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"UNIDIR")
+         process.status = -1
+         stop
+      END
+
+      READ Registro FROM DIRUV, "unirpcservices" ELSE CRT "No puedo leer unirpcservices en UNIDIR"; STOP
+
+      FINDSTR "uvcs" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         MSGSUB<-1>="####Timeout    ":Registro<FOUND>
+      END
+      FINDSTR "defcs" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         MSGSUB<-1>="####Timeout    ":Registro<FOUND>
+      END
+      CLOSE DIRUV
+
+RETURN
+
+
+CAMBIA3600:
+      POS=INDEX(Registro<FOUND>,'3600',1)
+      IF POS#0 THEN
+         PRINCIPIO = OCONV(Registro<FOUND>[1,POS-1],'')
+         Registro<FOUND> = PRINCIPIO:"14400"
+         WRITE Registro ON DIRUV, "unirpcservices" ELSE CRT "No puedo grabar F2 en unirpcservices"; STOP
+      END
+
+RETURN
+
+WYSE60:
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      * Creamos link a UV.WYSE60
+      Dato=""
+      Dato<-1>="F"
+      Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"terminfo":qsis.BARRA:"w"
+      Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"D_UFD"
+
+      WRITE Dato ON f.voc, "QSIS.WYSE60" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      CRT "#####Modificando wyse60"
+      EXECUTE "COPYI FROM QSIS.WYSE60 TO QSIS.WYSE60 wy60,wyse60 OVERWRITING" CAPTURING NULL
+      EXECUTE "LIST QSIS.WYSE60 WITH @ID LIKE ...60"
+      EXECUTE "DELETE VOC QSIS.WYSE60" CAPTURING NULL
+      MSGSUB<-1>="####Modificado wyse60"
+
+RETURN
+
+DEVICE:
+
+      IF OS.TYPE NE "UNIX" THEN
+         open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+         * Creamos link a DEVICE
+         Dato=""
+         Dato<-1>="F"
+         Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"&DEVICE&"
+         Dato<-1>=SYSTEM(sys.uvhome):qsis.BARRA:"D_&DEVICE&"
+
+         WRITE Dato ON f.voc, "QSIS.DEVICE" ELSE CRT "Error al escribir" ; STOP
+         CLOSE f.voc
+         OPEN "QSIS.DEVICE" TO DIRUV ELSE
+            PRINT ; CALL *UVPRINTMSG(85303,"DEVICE")
+            process.status = -1
+            stop
+         END
+
+         Dato=""
+         Dato<-1>= "Cinta Dat"
+         Dato<-1>= "\\.\tape0"
+         Dato<-1>= "0"
+         Dato<-1>= "DT"
+         Dato<-1>= " "
+         Dato<-1>= "\\.\tape0"
+         Dato<-1>= "\\.\tape0"
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= "A"
+         Dato<-1>= "N"
+         Dato<-1>= "N"
+         Dato<-1>= "65536"
+         Dato<-1>= "N"
+         Dato<-1>= " "
+         Dato<-1>= " "
+
+         WRITE Dato ON DIRUV, "TAPE0" ELSE CRT "Error al escribir" ; STOP
+
+         Dato=""
+         Dato<-1>= "DISCO EN ":LETRA:"\QUITER.BK\QUITER.BK"
+         Dato<-1>= "\\.\":LETRA:"\QUITER.BK\QUITER.BK "
+         Dato<-1>= "65536"
+         Dato<-1>= "F"
+         Dato<-1>= " "
+         Dato<-1>= "\\.\":LETRA:"\QUITER.BK\QUITER.BK"
+         Dato<-1>= "\\.\":LETRA:"\QUITER.BK\QUITER.BK"
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= " "
+         Dato<-1>= "L"
+         Dato<-1>= "Y"
+         Dato<-1>= "Y"
+         Dato<-1>= "65536"
+         Dato<-1>= "N"
+         Dato<-1>= " "
+         Dato<-1>= " "
+
+         WRITE Dato ON DIRUV, "DISCO" ELSE CRT "Error al escribir" ; STOP
+
+         CLOSE DIRUV
+         CRT "#####Incluyendo dispositivo tape0 y disco"
+         EXECUTE "LIST QSIS.DEVICE TAPE0 DISCO"
+         EXECUTE "DELETE VOC QSIS.DEVICE" CAPTURING NULL
+         MSGSUB<-1>="####Incluido dispositivo tape0 y disco"
+      END
+RETURN
+
+TRIMTRI2:
+
+      OPEN "APP.PROGS" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"APP.PROGS")
+         process.status = -1
+         stop
+      END
+      CRT "#####Incluyendo TRIM y TRIM2"
+
+      Dato=""
+      Dato<-1>= "      SUBROUTINE UTRIM(ANS,STATUS,DATA,TYPE)"
+      Dato<-1>= "*******************"
+      Dato<-1>= "*"
+      Dato<-1>= "* CONVERSION PARA HACER TRIM DE LOS DATOS"
+      Dato<-1>= "*"
+      Dato<-1>= "*"
+      Dato<-1>= "* Last updated by uv (root) at 11:13:32 on 02/22/2002."
+      Dato<-1>= "      ANS = TRIM(DATA,' ','B')"
+      Dato<-1>= "      STATUS = 0"
+      Dato<-1>= "      RETURN"
+      WRITE Dato ON DIRUV, "TRIM" ELSE CRT "Error al escribir" ; STOP
+
+      Dato=""
+      Dato<-1>= "      SUBROUTINE UTRIM(ANS,STATUS,DATA,TYPE)"
+      Dato<-1>= "*******************"
+      Dato<-1>= "*"
+      Dato<-1>= "* CONVERSION PARA HACER TRIM DE LOS DATOS del primer campo separados por *"
+      Dato<-1>= "*"
+      Dato<-1>= "*"
+      Dato<-1>= "* Last updated by uv (root) at 11:13:32 on 02/22/2002."
+      Dato<-1>= "      ANS = TRIM(DATA['*',1,1],' ','B'):'*':DATA['*',2,99]"
+      Dato<-1>= "      STATUS = 0"
+      Dato<-1>= "      RETURN"
+      WRITE Dato ON DIRUV, "TRI2" ELSE CRT "Error al escribir" ; STOP
+
+      CLOSE DIRUV
+
+      EXECUTE "BASIC APP.PROGS TRIM FORCE"
+      EXECUTE "BASIC APP.PROGS TRI2 FORCE"
+
+      TTY.SAVE=@TTY
+      CUENTA.SAVE=@PATH
+
+      @TTY='phantom'
+      execute "LOGTO UV"
+      @TTY=TTY.SAVE
+      PRINT "Estamos en: ": UPCASE(@WHO)
+
+      *DATA "Y"
+      *EXECUTE "CATALOG APP.PROGS $TRIM"
+      *DATA "Y"
+      *EXECUTE "CATALOG APP.PROGS $TRI2"
+      EXECUTE "CATALOG APP.PROGS $TRIM FORCE"
+      EXECUTE "CATALOG APP.PROGS $TRI2 FORCE"
+
+      @TTY='phantom'
+      EXECUTE "LOGTO ":CUENTA.SAVE
+      @TTY=TTY.SAVE
+      EXECUTE "WHO"
+
+      MSGSUB<-1>="####Incluido   TRIM y TRIM2"
+
+RETURN
+
+BLKMAX:
+
+      ****** Crea puntero a fichero UVCON
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      Registro=""
+      Registro<-1> = "F"
+      Registro<-1> = UV.ROOT
+      Registro<-1> = UV.ROOT:qsis.BARRA:'D_UFD'
+      WRITE Registro ON f.voc, "QSIS.DIRUV" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      OPEN "QSIS.DIRUV" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"DIRUV")
+         process.status = -1
+         stop
+      END
+
+      READ Registro FROM DIRUV, "uvconfig" ELSE CRT "No puedo leer uvconfig en DIR.UV"; STOP
+      CRT "#####Modificando BLKMAX a 65536"
+      FINDSTR "8192" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         CRT "Estaba a ":Registro<FOUND>
+         Registro<FOUND>="BLKMAX 65536"
+         WRITE Registro ON DIRUV, "uvconfig" ELSE CRT "No puedo grabar en uvconfig"; STOP
+         CLOSE DIRUV
+      END
+
+      EXECUTE "DELETE VOC QSIS.DIRUV" CAPTURING NUL
+      MSGSUB<-1>="####Modificado BLKMAX a 65536"
+
+RETURN
+
+MFILES:
+
+      ****** Crea puntero a fichero UVCON
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      Registro=""
+      Registro<-1> = "F"
+      Registro<-1> = UV.ROOT
+      Registro<-1> = UV.ROOT:qsis.BARRA:'D_UFD'
+      WRITE Registro ON f.voc, "QSIS.DIRUV" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      OPEN "QSIS.DIRUV" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"DIRUV")
+         process.status = -1
+         stop
+      END
+
+      READ Registro FROM DIRUV, "uvconfig" ELSE CRT "No puedo leer uvconfig en DIR.UV"; STOP
+      CRT "#####Modificando MFILES a 300"
+      FINDSTR "MFILES 12" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         CRT "Estaba a ":Registro<FOUND>
+         Registro<FOUND>="MFILES 300"
+         WRITE Registro ON DIRUV, "uvconfig" ELSE CRT "No puedo grabar en uvconfig"; STOP
+         CLOSE DIRUV
+      END
+
+      EXECUTE "DELETE VOC QSIS.DIRUV" CAPTURING NUL
+      MSGSUB<-1>="####Modificado MFILES a 300"
+
+RETURN
+
+NUSERS:
+
+      ****** Crea puntero a fichero UVCON
+      open "VOC" to f.voc else stop 'Can not open the "VOC" file'
+      Registro=""
+      Registro<-1> = "F"
+      Registro<-1> = UV.ROOT
+      Registro<-1> = UV.ROOT:qsis.BARRA:'D_UFD'
+      WRITE Registro ON f.voc, "QSIS.DIRUV" ELSE CRT "Error al escribir" ; STOP
+      CLOSE f.voc
+
+      OPEN "QSIS.DIRUV" TO DIRUV ELSE
+         PRINT ; CALL *UVPRINTMSG(85303,"DIRUV")
+         process.status = -1
+         stop
+      END
+
+      READ Registro FROM DIRUV, "uvconfig" ELSE CRT "No puedo leer uvconfig en DIR.UV"; STOP
+      CRT "#####Modificando NUSERS a 900"
+      FINDSTR "NUSERS   64" IN Registro SETTING FOUND ELSE FOUND = 0
+      IF FOUND THEN
+         CRT "Estaba a ":Registro<FOUND>
+         Registro<FOUND>="NUSERS 900"
+         WRITE Registro ON DIRUV, "uvconfig" ELSE CRT "No puedo grabar en uvconfig"; STOP
+         CLOSE DIRUV
+      END
+
+      EXECUTE "DELETE VOC QSIS.DIRUV" CAPTURING NUL
+      MSGSUB<-1>="####Modificado NUSERS a 900"
+
+RETURN
+
+UVREGEN:
+      TTY.SAVE=@TTY
+      CRT "#####uvregen para activar cambios en BLKMAX y MFILES"
+      cmd = OS.EXEC:"'":UV.ROOT:qsis.BARRA:"bin":qsis.BARRA:"uvregen'"
+      PRINT cmd
+
+      @TTY='phantom'
+      execute "LOGTO UV"
+      PRINT "Estamos en: ": UPCASE(@WHO)
+
+      EXECUTE cmd CAPTURING RESULTADO
+      PRINT RESULTADO
+      @TTY=TTY.SAVE
+      MSGSUB<-1>="####Ejecutado  uvregen para activar cambios en BLKMAX y MFILES"
+RETURN
+
+PARGEN:
+*** Configuramos UniVerse pero Quiter lo tiene que configurar quitersetup, si es cambio tiene que venir a la misma ruta
+*       open "PAR_GEN" to f.GEN else stop 'Can not open "PAR_GEN" file'
+*       READ Registro FROM f.GEN, "GEN" ELSE STOP "No puedo leer GEN en PAR_GEN"
+*       DATOS = Registro<25>
+*       QUITER = Registro<26>
+*
+*       Dato=QUITERHOME:"DATOS"
+*       WRITEV Dato ON f.GEN, "GEN",25 ELSE CRT "Error al escribir" ; STOP
+*       CRT "DATOS " : Dato
+*         CONBARRA=LEN(QUITERHOME)
+*       Dato=LEFT(QUITERHOME,CONBARRA-1)
+*       WRITEV Dato ON f.GEN, "GEN",26 ELSE CRT "Error al escribir" ; STOP
+*       PRINT "QUITER " : Dato
+*       CLOSE f.GEN
+
+RETURN
+

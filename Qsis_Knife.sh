@@ -40,7 +40,8 @@ _Load_Var_(){
 	### DmsTest o InstanciaX
 	QAWID=""
 	### UniVerse version a instalar
-	universever="uv_linux_11.3.4.9005_64bit.zip"
+	universever="uv_linux_11.3.5.1000_64bit.zip"
+	#universever="uv_linux_11.3.4.9005_64bit.zip"
 	#universever="uv_linux_11.3.4.9004_64bit.zip"
 	#universever="uv_linux_11.3.4_64bit.zip"
 	#universever="uv_linux_11.3.2.7001_64bit.zip"
@@ -49,7 +50,7 @@ _Load_Var_(){
 	#universever="uv_linux_11.2.5_32bit.zip"
 	#universever="uv_linux_11.2.4_64bit.zip"
 	#universever="uv_linux_11.1.14.zip"
-	#universever="uv_linux_12.2.1.2000_64bit.zip"
+	#universever="uv_linux_12.2.1.2001_64bit.zip"
 	### UniVerse Numero de serie y usuarios
 	UVSERIE="1234567890"
 	UVUSERS="15"
@@ -778,7 +779,7 @@ _ApartaUv_(){
 	if [ -d /usr/ibm ];
 	then
 		UVDIRINS=/usr/ibm
-		UVDIRBAK=/usr/ibm_bak_${LOGDATE}_${LOGTIME}
+		UVDIRBAK=/usr/ibm_bak_${LOGDATE}_${LOGTIME}/ibm
 		echo -e UniVerse Old instalado en......: $UVDIRINS
 		echo -e Apartamos UniVerse Old en......: $UVDIRBAK \\n
 		echo -e "Timeout en Uv old \\n" 1>>$UVLOG 2>>$UVERR
@@ -802,6 +803,7 @@ _ApartaUv_(){
 	then
 		UVDIRINS=/usr/uv
 		UVDIRBAK=/usr/uv_bak_${LOGDATE}_${LOGTIME}
+		mkdir -p $UVDIRBAK
 		echo -e UniVerse Old instalado en......: $UVDIRINS
 		echo -e Apartamos UniVerse Old en......: $UVDIRBAK \\n
 		echo -e "Timeout en Uv old \\n" 1>>$UVLOG 2>>$UVERR
@@ -814,7 +816,20 @@ _ApartaUv_(){
 		#/usr/uv/bin/smat -t|grep "*" 1>>$UVLOG 2>>$UVERR
 		#/usr/uv/bin/smat -t|grep "*"
 		echo -e "\\n Apartando $UVDIRINS \\n" 
-		mv -vf /usr/uv $UVDIRBAK
+		mv -vf $UVDIRINS $UVDIRBAK
+	else
+		echo -e "\\n"
+	fi
+
+	if [ -d /usr/unishared ];
+	then
+		UVDIRINS=/usr/unishared
+		UVDIRBAK=/usr/uv_bak_${LOGDATE}_${LOGTIME}
+		mkdir -p $UVDIRBAK
+		echo -e UniVerse Old instalado en......: $UVDIRINS
+		echo -e Apartamos UniVerse Old en......: $UVDIRBAK \\n
+		echo -e "\\n Apartando $UVDIRINS \\n" 
+		mv -vf $UVDIRINS $UVDIRBAK
 	else
 		echo -e "\\n"
 	fi
@@ -1210,9 +1225,11 @@ _QsCfgGen_(){
 	# En setup.properties vienen estas exclusiones
 	# excluir_cuentas=bin;QRS;QBI;rvs;quiter_web;qjava;Plantillas;QDBLiveLx;U2DBLivePy;DATOS;IMPFILE;HONDA;bk.POSVENTA5
 	# Si queremos agregar mas exclusiones es aqui
-	#EXCLUSIONES="IMPFILE;BBADAPTER;VISTA"
-	#sed "s!IMPFILE!$EXCLUSIONES!g "   $LDIR/quitersetup/conf/setup.properties.mod   > $LDIR/quitersetup/conf/setup.properties.mod.1
-	#cp -vf $LDIR/quitersetup/conf/setup.properties.mod.1 $LDIR/quitersetup/conf/setup.properties.mod
+	EXCLUSIONES="IMPFILE;BBADAPTER;VISTA"
+	#EXCLUSIONES="IMPFILE;BBADAPTER;VISTA;CONEXIONB;COMERCIALB;CONTA5B;POSVENTA5B;GEN5GLB"
+	#EXCLUSIONES="IMPFILE;BBADAPTER;VISTA;CONEXIONB;COMERCIALB;CONTA5B;POSVENTA5B;GEN5GLB"
+	sed "s!IMPFILE!$EXCLUSIONES!g "   $LDIR/quitersetup/conf/setup.properties.mod   > $LDIR/quitersetup/conf/setup.properties.mod.1
+	cp -vf $LDIR/quitersetup/conf/setup.properties.mod.1 $LDIR/quitersetup/conf/setup.properties.mod
 	#
 	cat $LDIR/quitersetup/conf/setup.properties.mod >>$QSLOG 
 	cp -v $LDIR/quitersetup/conf/setup.properties.mod $LDIR/quitersetup/conf/setup.properties 1>>$QSLOG 2>>$QSERR
@@ -1254,6 +1271,27 @@ _QsExeGen_(){
 	zip -vr $ZIPFIL quitersetup                            1>>$QSLOG 2>>$QSERR
 	date
 	echo -e "\\n==== Completada ejecucion QuiterSetup ==== \\n"
+}
+
+_ZipQuite_(){
+	echo -e $separador 
+	DIRLOG="$3_$1_$2_${FUNCNAME[0]}/${LOGDATE}_${LOGTIME}"
+	ZLOG="$LDIR/$DIRLOG/QSetupExe_stdout.log"
+	ZERR="$LDIR/$DIRLOG/QSetupExe_stderr.log"
+	ZIPFIL="$LDIR/RepoLin/${HOST}_QuiterSetup.zip"
+	mkdir -p $LDIR/$DIRLOG
+	echo -e "==== [$1/$2] Ejecutar zip de $QPATHGEN ===="
+	echo -e Date...........................: `date`
+	echo -e Run dir........................: `pwd`
+	echo -e File Zip.......................: $ZIPFIL
+	echo -e Standard Output................: $ZLOG
+	echo -e Standard Error.................: $ZERR
+	echo -e Quiter.Path....................: $QPATHGEN
+	echo -e Sufijo.........................: $sufijoGEN \\n
+	cd $LDIR
+	zip -vr $ZIPFIL $QPATHGEN        1>>$ZLOG 2>>$ZERR
+	date
+	echo -e "\\n==== Completado zip ==== \\n"
 }
 
 _QsCurlDC_(){
@@ -1531,6 +1569,32 @@ _Q_Proces_(){
 	#tail -n 11 $UVLOG
 	#
 	#cd $LDIR
+
+	# procesos en Quiter despues de plataformar
+	# Qbase no lleva activado el sistema de personas
+	# Detectado 30/11/2022 corregido ???
+	echo "N"                     1> $QCMD
+	echo "DATE"                  1>>$QCMD
+	echo "WHO"                   1>>$QCMD
+	echo "SH -c pwd"             1>>$QCMD
+	echo "CT PARAMETROS SISTEMA" 1>>$QCMD
+	echo "DATE"                  1>>$QCMD
+	echo "ED PARAMETROS SISTEMA" 1>>$QCMD
+	echo "110"                   1>>$QCMD		
+	echo "DE"                    1>>$QCMD
+	echo "I"                     1>>$QCMD
+	echo "1"                     1>>$QCMD	
+	echo ""                      1>>$QCMD
+	echo "FI"                    1>>$QCMD
+	echo "DATE"                  1>>$QCMD
+	echo "CT PARAMETROS SISTEMA" 1>>$QCMD
+	echo "DATE"                  1>>$QCMD
+	#
+	cd $QPATH/CONTA5
+	$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
+	tail -n 11 $UVLOG
+	#
+	cd $LDIR
 	echo -e "\\n==== Completado procesos PostPlataformado $sufijo ==== \\n"
 }
 
@@ -1839,6 +1903,7 @@ _QD_pause_(){
 }
 
 _Qbi_Vrfy_(){
+
 	LOGDATE=`date +\%F`
 	LOGTIME=`date +\%T`
 	DIRLOG="$3_$1_$2_${FUNCNAME[0]}"
@@ -1860,15 +1925,35 @@ _Qbi_Vrfy_(){
 	echo -e UniVerse dir...................: $UVDIR
 	#ejecutar procesos dentro de UniVerse
 	cd $UVDIR
-	echo -e "LIST UV_SCHEMA" 1>$QCMD 2>$QCMD
-	echo -e "VERIFY.SQL SCHEMA $QPATH/POSVENTA5 FIX NOPAGE" 1>>$QCMD 2>>$QCMD
-	echo -e "VERIFY.SQL SCHEMA $QPATH/CONTA5 FIX NOPAGE"    1>>$QCMD 2>>$QCMD
-	echo -e "VERIFY.SQL SCHEMA $QPATH/COMERCIAL FIX NOPAGE" 1>>$QCMD 2>>$QCMD
+	echo -e "DATE"                                          >>$QCMD
+	echo -e "WHO"                                           >>$QCMD
+	echo -e "DATE"                                          >>$QCMD
+	echo -e "LIST UV_USERS"                                 >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD
+	echo -e "LIST UV_SCHEMA"                                >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD			
+	echo -e "VERIFY.SQL SCHEMA $QPATH/POSVENTA5 FIX NOPAGE" >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD				
+	echo -e "VERIFY.SQL SCHEMA $QPATH/CONTA5 FIX NOPAGE"    >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD				
+	echo -e "VERIFY.SQL SCHEMA $QPATH/COMERCIAL FIX NOPAGE" >>$QCMD 
 	#este comando es peligroso
-	#echo -e "VERIFY.SQL ALL FIX NOPAGE"                    1>>$QCMD 2>>$QCMD
-	echo -e "LIST UV_SCHEMA"                                1>>$QCMD 2>>$QCMD
-	echo -e "LIST UV_USERS"                                 1>>$QCMD 2>>$QCMD
-	$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
+	#echo -e "VERIFY.SQL ALL FIX NOPAGE"                    >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD			
+	echo -e "LIST UV_SCHEMA"                                >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD				
+	echo -e "LIST UV_USERS"                                 >>$QCMD 
+	echo -e "DATE"                                          >>$QCMD			
+	case $universever in
+		uv_linux_12*)
+			su uvadm -c "$UVCMD <$QCMD" 1>>$UVLOG 2>>$UVERR
+			tail -n 10 $UVLOG
+			;;
+		*)
+			$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
+			tail -n 10 $UVLOG
+			;;
+	esac
 	cd $LDIR
 	echo -e "\\n==== Completed QBI Verify ==== \\n"
 }
@@ -2385,9 +2470,11 @@ _UV__Inst_(){
 	case $universever in
 		uv_linux_12*)
 			# Para UniVerse_12 añadimos aquiter en los grupos de administracion de UniVerse
-			usermod -G uvadm,uvdb,uvsql,quiter aquiter
+			usermod -G uvadm,uvdb,quiter aquiter
+			# Para UniVerse 12 añadimos en el grupo quiter a uvadm
+			usermod -G quiter uvadm
 			
-			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvsql
+			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvadm
 			cd $UVDIR
 			echo "DATE"                         > $QCMD
 			echo "LIST UV_USERS NOPAGE"         >>$QCMD
@@ -2406,7 +2493,7 @@ _UV__Inst_(){
 			echo "DATE"                         >>$QCMD			
 			echo "LIST UV_USERS NOPAGE"         >>$QCMD
 			echo "DATE"                         >>$QCMD			
-			su uvsql -c "$UVCMD <$QCMD"
+			su uvadm -c "$UVCMD <$QCMD"
 			tail -n 10 $UVLOG
 			;;
 		*)
@@ -2545,17 +2632,17 @@ _UV__12___(){
 	
 	case $universever in
 		uv_linux_12*)
-			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm uvsql y uvdb
+			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm y uvdb
 			# Aunque el instalador de UniVerse los agrega, al ejecutar QSIS.INI.UV sobreescribe UV.LOGIN sin ellos
 			# Como ultimo paso recuperamos el UV.LOGIN que el instalador genero en &SAVEDLISTS&
-			# Cuando QSIS.INI.UV agrege los usuarios uvadm uvsql y uvdb podremos desactivar esto
+			# Cuando QSIS.INI.UV agrege los usuarios uvadm y uvdb podremos desactivar esto
 			cd $UVDIR
 			$UVCMD "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING"
 			
 			# Para UniVerse_12 añadimos aquiter en los grupos de administracion de UniVerse
-			usermod -G uvadm,uvdb,uvsql,quiter aquiter
+			usermod -G uvadm,uvdb,quiter aquiter
 			
-			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvsql
+			# Para UniVerse_12 la configuracion de los Usuarios SQL tiene que realizarla uvadm
 			cd $UVDIR
 			echo "DATE"                         > $QCMD
 			echo "LIST UV_USERS NOPAGE"         >>$QCMD
@@ -2574,7 +2661,7 @@ _UV__12___(){
 			echo "DATE"                         >>$QCMD			
 			echo "LIST UV_USERS NOPAGE"         >>$QCMD
 			echo "DATE"                         >>$QCMD			
-			su uvsql -c "$UVCMD <$QCMD"
+			su uvadm -c "$UVCMD <$QCMD"
 			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR
 			tail -n 11 $UVLOG
 			;;
@@ -2909,9 +2996,7 @@ _Q_Rights_(){
 	echo -e Sufijo.........................: $sufijo
 	echo -e GQuiter........................: $gquiter \\n
 	chown -vR $gquiter:$gquiter $QPATH                       1>$PSLOG  2>$PSERR
-	chown -vR $gquiter:$gquiter /u2/InstalacionQuiterAutoWeb 1>>$PSLOG 2>>$PSERR
 	chmod -vR 775 $QPATH                                     1>>$PSLOG 2>>$PSERR
-	chmod -vR 775 /u2/InstalacionQuiterAutoWeb               1>>$PSLOG 2>>$PSERR
 	chmod -vR 777 $QPATH/quiter_web                          1>>$PSLOG 2>>$PSERR
 	chmod -vR 777 $QPATH/POSVENTA5/COM*                      1>>$PSLOG 2>>$PSERR
 	chmod -vR 777 $QPATH/CONTA5/COM*                         1>>$PSLOG 2>>$PSERR
@@ -3031,13 +3116,13 @@ _Q_Triger_(){
 	cd $LDIR
 	tail -n 11 $UVLOG
 	
-	# En version UniVerse_12 QSIS.PREPBATCH quita uvadm, uvdb y uvsql de UV.LOGIN
+	# En version UniVerse_12 QSIS.PREPBATCH quita uvadm y uvdb de UV.LOGIN
 	case $universever in
 		uv_linux_12*)
-			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm uvsql y uvdb
+			# Para UniVerse_12 queremos en UV.LOGIN los usuario uvadm y uvdb
 			# Aunque el instalador de UniVerse los agrega, al ejecutar QSIS.INI.UV sobreescribe UV.LOGIN sin ellos
 			# Como ultimo paso recuperamos el UV.LOGIN que el instalador genero en &SAVEDLISTS&
-			# Cuando QSIS.INI.UV agrege los usuarios uvadm uvsql y uvdb podremos desactivar esto
+			# Cuando QSIS.INI.UV agrege los usuarios uvadm y uvdb podremos desactivar esto
 			cd $UVDIR
 			pwd  >> $UVLOG 
 			date >> $UVLOG 
@@ -3582,7 +3667,18 @@ _Paquetes_(){
 			dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm 1>>$YUMLOG 2>>$YUMERR
 			#dnf -y install @ftp-server @web-server mailx ftp iptraf mc iotop expect python3-pexpect samba samba-client telnet telnet-server nmon htop fping openvpn glibc.i686 postfix system-storage-manager ncurses-libs.i686 ncurses-compat-libs.i686 ncurses-libs ncurses-compat-libs libnsl libnsl.i686 socat atop iftop rclone postfix gnutls-utils nss-tools rsyslog zip ed open-vm-tools net-tools sysstat dos2unix 1>>$YUMLOG 2>>$YUMERR
 			#dnf -y install @ftp-server @web-server mailx ftp iptraf mc iotop expect python3-pexpect samba samba-client telnet telnet-server nmon htop fping openvpn glibc.i686 postfix system-storage-manager ncurses-libs.i686 ncurses-compat-libs.i686 ncurses-libs ncurses-compat-libs libnsl.x86_64 libnsl.i686 socat atop iftop rclone postfix gnutls-utils nss-tools rsyslog zip ed open-vm-tools net-tools sysstat dos2unix lsof 1>>$YUMLOG 2>>$YUMERR
-			dnf -y install @ftp-server @web-server java-11-openjdk-headless.x86_64 mailx ftp iptraf mc iotop expect python3-pexpect samba samba-client telnet telnet-server nmon htop fping openvpn glibc.i686 postfix system-storage-manager ncurses-libs.i686 ncurses-compat-libs.i686 ncurses-libs ncurses-compat-libs libnsl.x86_64 libnsl.i686 socat atop iftop rclone postfix gnutls-utils nss-tools rsyslog zip ed open-vm-tools net-tools sysstat dos2unix lsof 1>>$YUMLOG 2>>$YUMERR
+			dnf -y install @ftp-server @web-server java-11-openjdk-headless.x86_64 mailx ftp iptraf mc wget iotop expect python3-pexpect samba samba-client telnet telnet-server nmon htop fping openvpn glibc.i686 postfix system-storage-manager ncurses-libs.i686 ncurses-compat-libs.i686 ncurses-libs ncurses-compat-libs libnsl.x86_64 libnsl.i686 socat atop iftop rclone postfix gnutls-utils nss-tools rsyslog zip ed open-vm-tools net-tools sysstat dos2unix lsof 1>>$YUMLOG 2>>$YUMERR
+			echo -e $separador 1>>$YUMLOG 2>>$YUMERR
+			echo -e Realizando Update \\n 1>>$YUMLOG 2>>$YUMERR
+			dnf -y update 1>>$YUMLOG 2>>$YUMERR
+			dnf -y remove java 1>>$YUMLOG 2>>$YUMERR
+			;;
+		9)
+			echo -e $separador 1>$YUMLOG 2>$YUMERR
+			echo -e Instalando nuestros paquetes 1>>$YUMLOG 2>>$YUMERR
+			dnf -y install epel-release 1>>$YUMLOG 2>>$YUMERR
+			dnf -y install @ftp-server @web-server zip tar java-11-openjdk-headless.x86_64 s-nail ftp iptraf mc wget iotop expect python3-pexpect samba samba-client telnet telnet-server nmon htop fping openvpn glibc.i686 postfix ncurses-libs.i686 ncurses-libs libnsl.x86_64 libnsl.i686 socat atop iftop rclone postfix gnutls-utils nss-tools rsyslog zip ed open-vm-tools net-tools sysstat dos2unix lsof chkconfig initscripts 1>>$YUMLOG 2>>$YUMERR
+			# No vienen en R9 los paquetes mailx system-storage-manager ncurses-compat-libs.i686 ncurses-compat-libs
 			echo -e $separador 1>>$YUMLOG 2>>$YUMERR
 			echo -e Realizando Update \\n 1>>$YUMLOG 2>>$YUMERR
 			dnf -y update 1>>$YUMLOG 2>>$YUMERR
@@ -3742,7 +3838,10 @@ _SysConfig(){
 	fi
 	
 	echo -e "\\n==== lshw ==== \\n" 1>>$SISLOG 2>>$SISERR
-	lshw > $SISHWD
+	lshw      > $SISHWD
+	lsblk     >>$SISHWD
+	lsblk -fs >>$SISHWD
+	df -h     >>$SISHWD
 	
 	echo -e "\\n==== Completada configuracion del sistema ==== \\n"
 	echo -e $separador
@@ -3887,6 +3986,28 @@ _GenQbase_ExpGgw_(){
 			_QsCurlDC_ 05 07 $FUNCNAME
 			_LogEmail_ 06 07 $FUNCNAME
 			_Clean_Up_ 07 07 $FUNCNAME
+		else 
+			echo -e "No-Existe $QPATH ejecucion finalizada. \\n"
+	fi
+	date
+	echo "Fin Generar Qbase y Exportar Qgw"|mailx -s "$HOST $FUNCNAME" $email
+	echo -e "[ Fin Generar Qbase y Exportar Qgw ]\\n"
+}
+
+_ZipQuiter_UpDts_(){
+	#
+	# Logica para generar zip y subir a datosconversion
+	#
+	echo -e "[ Inicio Generar zip y subir a datosconversion ]"
+	echo "Inicio Generar zip y subir a datosconversion"|mailx -s "$HOST $FUNCNAME" $email
+	date
+	if [ -d $QPATH ]
+		then
+			echo -e "Existe $QPATH continua ejecucion. \\n"
+			_ZipQuite_ 01 04 $FUNCNAME
+			_QsCurlDC_ 02 04 $FUNCNAME
+			_LogEmail_ 03 04 $FUNCNAME
+			_Clean_Up_ 04 04 $FUNCNAME
 		else 
 			echo -e "No-Existe $QPATH ejecucion finalizada. \\n"
 	fi
@@ -4232,9 +4353,9 @@ _ScriptLog
 ###		Asumimos que Uv_old esta detenido.
 ###		El proceso deja Uv_new detenido para activar.
 #_UniVerse_Upgrade
-### Si tiene QBI activado despues del UPGRADE tenemos que ejecutar VERIFY
+### Si tiene QBI activado despues del UPGRADE tenemos activar y arrancar UniVerse, podemos ejecutar VERIFY
 #_Qbi_Vrfy_
-### Si tiene instancia-B  despues del UPGRADE tenemos que procesar instancia-B, asignamos la letra de la instancia a procesar.
+### Si tiene instancia-B  despues del UPGRADE tenemos activar y arrancar UniVerse, podemos procesar instancia-B, asignamos la letra de la instancia a procesar.
 #sufijo="B"
 #QPATH="/u2/quiter$sufijo"
 #_UpdAccnt_ 04 08 _UniVerse_Upgrade
@@ -4324,6 +4445,10 @@ _ScriptLog
 ###		En el directorio de lanzamiento queda RepoLin/$HOST_qjava_qrs_quiterweb_mysql.zip con la exportacion de Ggw
 #_GenQbase_ExpGgw_
 
+### proceso ZIP QUITER y SUBIR A DATOSCONVERSION
+###		En el directorio de lanzamiento queda RepoLin/$HOST_QuiterSetup.zip con el zip generado
+#_ZipQuiter_UpDts_
+
 ### proceso DESPLEGAR INSTANCIAX [platafoma quiterX, configura sistema, permisos, trigers, pargen, qdblive, desactivar Qae]
 ### 	Asumimos:
 ### 		1.- Dms pre y post-plataformado.
@@ -4377,4 +4502,3 @@ _ScriptLog
 #_Pst_Platform_QAE
 
 exit 0
-

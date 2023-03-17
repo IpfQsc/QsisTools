@@ -1225,9 +1225,8 @@ _QsCfgGen_(){
 	# En setup.properties vienen estas exclusiones
 	# excluir_cuentas=bin;QRS;QBI;rvs;quiter_web;qjava;Plantillas;QDBLiveLx;U2DBLivePy;DATOS;IMPFILE;HONDA;bk.POSVENTA5
 	# Si queremos agregar mas exclusiones es aqui
-	EXCLUSIONES="IMPFILE;BBADAPTER;VISTA"
-	#EXCLUSIONES="IMPFILE;BBADAPTER;VISTA;CONEXIONB;COMERCIALB;CONTA5B;POSVENTA5B;GEN5GLB"
-	#EXCLUSIONES="IMPFILE;BBADAPTER;VISTA;CONEXIONB;COMERCIALB;CONTA5B;POSVENTA5B;GEN5GLB"
+	EXCLUSIONES="IMPFILE;PLANTILLAS;datos;BBADAPTER;VISTA"
+	#EXCLUSIONES="IMPFILE;PLANTILLAS;datos;BBADAPTER;VISTA;COMPERSONAL;QBIPremiumV2;CONEXIONB;COMERCIALB;CONTA5B;POSVENTA5B;GEN4GLB"
 	sed "s!IMPFILE!$EXCLUSIONES!g "   $LDIR/quitersetup/conf/setup.properties.mod   > $LDIR/quitersetup/conf/setup.properties.mod.1
 	cp -vf $LDIR/quitersetup/conf/setup.properties.mod.1 $LDIR/quitersetup/conf/setup.properties.mod
 	#

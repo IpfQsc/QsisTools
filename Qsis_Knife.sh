@@ -901,7 +901,7 @@ _UvOldBak_(){
 	echo -e Standard Output................: $ZIPLOG
 	echo -e Standard Error.................: $ZIPERR \\n
 	
-	echo -e Generando copia de la instalación actual de UniVerse \\n 
+	echo -e Generando copia de la instalacion actual de UniVerse \\n 
 	#zip -r --symlinks $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
 	# tar gestiona mejor los enlaces simbolicos
 	tar cvfz $ZIPFIL /usr/uv /usr/unishared /etc/init.d/uv.rc /.uvhome /.uvlibs /uv 1>$ZIPLOG 2>$ZIPERR
@@ -1178,6 +1178,10 @@ _Ko_Qae___(){
 	echo "DATE"                 >> $QCMD
 	echo "SERVICIOS.APLICACION" >> $QCMD
 	echo ""                     >> $QCMD
+	#echo "DATE"                 >> $QCMD
+	#echo "SERVICIOS.APLICACION" >> $QCMD
+	#echo "QAE"                  >> $QCMD
+	#echo ""                     >> $QCMD
 	echo "DATE"                 >> $QCMD
 	echo "SERVICIOS.APLICACION" >> $QCMD
 	echo "6"                    >> $QCMD
@@ -1428,16 +1432,22 @@ _RepoLin2_(){
 	echo -e Standard Error.................: $RRERR
 	echo -e Rclone command.................: $RRCMD \\n
 	mkdir -p $DIRLOG
-	echo -e "No Existe $LDIR/RepoLin descargamos     \\n"
-	_TstRclone                                         1>$RRLOG 2>$RRERR
-	echo -e "Descargando QDBLiveLx                   \\n"   
-	_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
-	echo -e "Descargando setup_plataforma.properties \\n"   
-	_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
-	echo -e "Descargando CreaUsuario                 \\n"   
-	_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
-	ls -lha RepoLin
-	du -hs RepoLin
+	if [ -d $LDIR/RepoLin ];
+		then
+			echo -e "Existe $LDIR/RepoLin no descargamos \\n"
+		else
+			echo -e "No Existe $LDIR/RepoLin descargamos \\n"
+			_TstRclone                                         1>$RRLOG 2>$RRERR
+			echo -e "Descargando QDBLiveLx                   \\n"   
+			_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
+			echo -e "Descargando setup_plataforma.properties \\n"   
+			_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
+			echo -e "Descargando CreaUsuario                 \\n"   
+			_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
+	fi
+	echo -e "Contenido en $LDIR/RepoLin       \\n"
+	ls -lha $LDIR/RepoLin
+	du -hs $LDIR/RepoLin
 	date
 	echo -e "\\n==== Completada descarga ==== \\n"
 }
@@ -1473,7 +1483,7 @@ _RepoLin3_(){
 	fi
 	echo -e "Contenido en $LDIR/RepoLin       \\n"
 	ls -lha $LDIR/RepoLin
-	du -hs RepoLin
+	du -hs $LDIR/RepoLin
 	date
 	echo -e "\\n==== Completada descarga ==== \\n"
 }
@@ -2518,6 +2528,7 @@ _UV__Inst_(){
 			;;
 	esac
 	cd $UVDIR
+	$UVCMD "CT VOC LOGIN"    1>>$UVLOG 2>>$UVERR
 	$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR
 	echo -e "UniVerse Info"
 	bin/uvregen -z

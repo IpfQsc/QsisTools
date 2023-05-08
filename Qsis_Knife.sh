@@ -90,55 +90,55 @@ _Load_Var_(){
 	case $PAIS in
 		es | ag )      
 			LCTIME="ln -vs /usr/share/zoneinfo/Europe/Madrid /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			;;
 		bo)      
 			LCTIME="ln -vs /usr/share/zoneinfo/America/La_Paz /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
 			;;
 		co)
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Bogota /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
 			;; 
 		pe)
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Lima /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
 			;; 
 		mx)
 			LCTIME="ln -vs /usr/share/zoneinfo/Mexico/General /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISNA
 			VPNPAIS=tapQuiterMX
 			;;
 		arg | agarg )
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
 			;;
 		pt | agpt )
 			LCTIME="ln -vs /usr/share/zoneinfo/Europe/Lisbon /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PT -Duser.country=PT -Duser.timezone=Europe/Lisbon -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PT -Duser.country=PT -Duser.timezone=Europe/Lisbon -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PT -Duser.country=PT -Duser.timezone=Europe/Lisbon -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PT -Duser.country=PT -Duser.timezone=Europe/Lisbon -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			;;
 		cl )
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Santiago /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""			
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""			
 			QISVPN=tunQISLA
 			;;
 		*)
 			LCTIME="ln -vs /usr/share/zoneinfo/Europe/Madrid /etc/localtime"
-			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -XX:+UseParallelGC -Xmx4G\""
-			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -XX:+UseParallelGC -Xms512M -Xmx4G -XX:MaxPermSiz=128m\""
+			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
+			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=ES -Duser.country=ES -Duser.timezone=Europe/Madrid -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			;;
 	esac
 	#
@@ -1432,11 +1432,15 @@ _RepoLin2_(){
 	echo -e Standard Error.................: $RRERR
 	echo -e Rclone command.................: $RRCMD \\n
 	mkdir -p $DIRLOG
-	if [ -d $LDIR/RepoLin ];
-		then
-			echo -e "Existe $LDIR/RepoLin no descargamos \\n"
-		else
-			echo -e "No Existe $LDIR/RepoLin descargamos \\n"
+	# Para poder encadenar procesos 
+	# RepoLin existe al generar Qbase, si queremos desplegar instanciaX despues no podemos
+	# verificar si existe el directorio sino cada uno de los archivos que necesitamos
+	# si exiten no los descargamos y si no existen tenemos que descargarlos
+	#if [ -d $LDIR/RepoLin ];
+	#	then
+	#		echo -e "Existe $LDIR/RepoLin no descargamos \\n"
+	#	else
+	#		echo -e "No Existe $LDIR/RepoLin descargamos \\n"
 			_TstRclone                                         1>$RRLOG 2>$RRERR
 			echo -e "Descargando QDBLiveLx                   \\n"   
 			_RcloneDw_ QDBLiveLx.tar.gz                        1>>$RRLOG 2>>$RRERR
@@ -1444,7 +1448,7 @@ _RepoLin2_(){
 			_RcloneDw_ setup_plataforma.properties             1>>$RRLOG 2>>$RRERR
 			echo -e "Descargando CreaUsuario                 \\n"   
 			_RcloneDw_ CreaUsuario                             1>>$RRLOG 2>>$RRERR
-	fi
+	#fi
 	echo -e "Contenido en $LDIR/RepoLin       \\n"
 	ls -lha $LDIR/RepoLin
 	du -hs $LDIR/RepoLin
@@ -2824,7 +2828,7 @@ _QGW_Inst_(){
 	echo -e Standard Error.................: $QGWERR
 	echo -e Quiter Path....................: $QPATH \\n
 	mkdir -p $DIRLOG 
-	tar xvfz RepoLin/PaqueteQJavaLinux_64.tar.gz 1>$QGWLOG 2>$QGWERR
+	tar xvfz RepoLin/PaqueteQJavaLinux.tar.gz 1>$QGWLOG 2>$QGWERR
 	mv qjava $QPATH/qjava 1>>$QGWLOG 2>>$QGWERR
 	if [ -f /etc/my.cnf ];
 		then

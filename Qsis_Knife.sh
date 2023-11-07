@@ -40,7 +40,8 @@ _Load_Var_(){
 	### DmsTest o InstanciaX
 	QAWID=""
 	### UniVerse version a instalar
-	universever="uv_linux_11.3.5.1000_64bit.zip"
+	universever="uv_linux_11.3.5.1002_64bit.zip"
+	#universever="uv_linux_11.3.5.1000_64bit.zip"
 	#universever="uv_linux_11.3.4.9005_64bit.zip"
 	#universever="uv_linux_11.3.4.9004_64bit.zip"
 	#universever="uv_linux_11.3.4_64bit.zip"
@@ -59,7 +60,7 @@ _Load_Var_(){
 	UVPY="1"
 	### Libreria UniVerse para QGW
 	QGWLIBold="10.2"
-	QGWLIBnew="11.3.2"
+	QGWLIBnew="11.3.4"
 	### En los procesos de limpieza de Estadisticas del Pool y Sucesos de Mensajes
 	### fecha a partir de la que conservamos registros (eliminamos los anteriores a esta fecha).
 	MAXDATE="2022-08-01"
@@ -98,31 +99,36 @@ _Load_Var_(){
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=BO -Duser.country=BO -Duser.timezone=America/La_Paz -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
+			NARVPN=tunNARLA
 			;;
 		co)
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Bogota /etc/localtime"
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CO -Duser.country=CO -Duser.timezone=America/Bogota -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
+			NARVPN=tunNARLA
 			;; 
 		pe)
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Lima /etc/localtime"
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=PE -Duser.country=PE -Duser.timezone=America/Lima -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
+			NARVPN=tunNARLA
 			;; 
 		mx)
 			LCTIME="ln -vs /usr/share/zoneinfo/Mexico/General /etc/localtime"
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=MX -Duser.country=MX -Duser.timezone=America/Mexico_City -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISNA
-			VPNPAIS=tapQuiterMX
+			NARVPN=tunNARNA
+			#VPNPAIS=tapQuiterMX
 			;;
 		arg | agarg )
 			LCTIME="ln -vs /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime"
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=AR -Duser.country=AR -Duser.timezone=America/Buenos_Aires -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QISVPN=tunQISLA
+			NARVPN=tunNARLA
 			;;
 		pt | agpt )
 			LCTIME="ln -vs /usr/share/zoneinfo/Europe/Lisbon /etc/localtime"
@@ -134,6 +140,7 @@ _Load_Var_(){
 			QGWENV="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""
 			QGWCAT="JAVA_OPTS=\"-Dquiter.home=\$QUITER_HOME -Dfile.encoding=ISO-8859-15 -Duser.language=es -Duser.region=CL -Duser.country=CL -Duser.timezone=America/Santiago -server -Xms4G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=20 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70\""			
 			QISVPN=tunQISLA
+			NARVPN=tunNARLA
 			;;
 		*)
 			LCTIME="ln -vs /usr/share/zoneinfo/Europe/Madrid /etc/localtime"
@@ -632,6 +639,7 @@ _Fwd_Dms__(){
 			firewall-cmd --permanent --zone=trusted --change-interface=tun100      1>>$FWDLOG 2>>$FWDLOG
 			firewall-cmd --permanent --zone=trusted --change-interface=tun1000     1>>$FWDLOG 2>>$FWDLOG
 			firewall-cmd --permanent --zone=trusted --change-interface=tunQIS      1>>$FWDLOG 2>>$FWDLOG
+			firewall-cmd --permanent --zone=trusted --change-interface=tunNAR      1>>$FWDLOG 2>>$FWDLOG
 			firewall-cmd --permanent --zone=public  --add-service=ftp              1>>$FWDLOG 2>>$FWDLOG
 			firewall-cmd --permanent --zone=public  --add-service=http             1>>$FWDLOG 2>>$FWDLOG
 			firewall-cmd --permanent --zone=public  --add-service=samba            1>>$FWDLOG 2>>$FWDLOG
@@ -645,12 +653,12 @@ _Fwd_Dms__(){
 			else
 				echo -e "\\n>>>>>> Pais sin interfaz vpn-qis duplicado\\n"         1>>$FWDLOG 2>>$FWDLOG
 			fi
-			if [ $VPNPAIS ]														   1>>$FWDLOG 2>>$FWDLOG
+			if [ $NARVPN ]														   1>>$FWDLOG 2>>$FWDLOG
 			then
-				echo -e "\\n>>>>>> Pais con interfaz vpn particular \\n"            1>>$FWDLOG 2>>$FWDLOG
-				firewall-cmd --permanent --zone=trusted --change-interface=$VPNPAIS 1>>$FWDLOG 2>>$FWDLOG
+				echo -e "\\n>>>>>> Pais con interfaz vpn particular \\n"           1>>$FWDLOG 2>>$FWDLOG
+				firewall-cmd --permanent --zone=trusted --change-interface=$NARVPN 1>>$FWDLOG 2>>$FWDLOG
 			else
-				echo -e "\\n>>>>>> Pais sin interfaz vpn particular \\n"            1>>$FWDLOG 2>>$FWDLOG
+				echo -e "\\n>>>>>> Pais sin interfaz vpn particular \\n"           1>>$FWDLOG 2>>$FWDLOG
 			fi
 			if [ $QAEnew ]														   1>>$FWDLOG 2>>$FWDLOG
 			then
@@ -1091,6 +1099,7 @@ _CfgSufijo(){
 		cp -rpv /u2/usuarios/quiter /u2/usuarios/$gquiter 1>$BPLOG 2>$BPERR
 		sed "s/qhome/qhome$sufijo/g " /u2/usuarios/quiter/.bash_profile > /u2/usuarios/$gquiter/.bash_profile
 		useradd -d /u2/usuarios/$gquiter $gquiter 1>>$BPLOG 2>>$BPERR
+		/usr/sbin/useradd -d /u2/usuarios/$gquiter $gquiter 1>>$BPLOG 2>>$BPERR
 		echo $quiterpass | passwd $gquiter --stdin 1>>$BPLOG 2>>$BPERR
 		usermod -a -G $gquiter quiter
 		usermod -a -G $gquiter ftpq
@@ -1148,6 +1157,10 @@ _DirCfg_X_(){
 	echo -e "==== Qjava ====" 1>>$DRLOG 2>>$DRERR
 	ln -vs /u2/quiter/qjava $QPATH/qjava 1>>$DRLOG 2>>$DRERR
 	ls -lha $QPATH
+	echo -e "==== U2 ====" 1>>$DRLOG 2>>$DRERR
+	ls -lha /u2      1>>$DRLOG 2>>$DRERR	
+	chmod -v 777 /u2 1>>$DRLOG 2>>$DRERR	
+	ls -lha /u2      1>>$DRLOG 2>>$DRERR	
 	echo -e "\\n==== Completada creacion directorios Post-QuiterSetup $sufijo ==== \\n"
 }
 
@@ -1282,6 +1295,12 @@ _ZipQuite_(){
 	ZLOG="$LDIR/$DIRLOG/QSetupExe_stdout.log"
 	ZERR="$LDIR/$DIRLOG/QSetupExe_stderr.log"
 	ZIPFIL="$LDIR/RepoLin/${HOST}_QuiterSetup.zip"
+	if [ -d $LDIR/RepoLin ];
+	then
+		echo -e "\\n Existe RepoLin /u2/uv" 		
+	else
+		mkdir -p $LDIR/RepoLin
+	fi	
 	mkdir -p $LDIR/$DIRLOG
 	echo -e "==== [$1/$2] Ejecutar zip de $QPATHGEN ===="
 	echo -e Date...........................: `date`
@@ -2062,6 +2081,26 @@ _Qtr_plat_(){
 	#Cuando tenemos QDBLive mas actual en DmsNew que en DmsOld
 	#mv -v $QPATH/QDBLiveLx $QPATH/QDBLiveLx.old 1>>$QPLOG 2>>$QPERR
 	#cp -rpv /u2/quiter.plat/QDBLiveLx $QPATH    1>>$QPLOG 2>>$QPERR
+    #Corregir UV.LOGIN
+    #UVLOG="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UVLOGIN_stdout.log"
+    #UVERR="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UVLOGIN_stderr.log"
+    #UVCMD="/usr/uv/bin/uv"
+    #QCMD="$LDIR/$DIRLOG/${LOGDATE}_${LOGTIME}_UVLOGIN__Cmd.txt"
+    #echo -e "DATE"                                                >>$QCMD
+    #echo -e "WHO"                                                 >>$QCMD
+    #echo -e "QSIS.NOMENU"                                         >>$QCMD
+    #echo -e "DATE"                                                >>$QCMD
+    #echo -e "LOGTO UV"                                            >>$QCMD
+    #echo -e "WHO"                                                 >>$QCMD
+    #echo -e "CT VOC UV.LOGIN"                                     >>$QCMD
+    #echo -e "DATE"                                                >>$QCMD
+    #echo -e "COPY FROM UV.SAVEDLISTS TO VOC UV.LOGIN OVERWRITING" >>$QCMD
+    #echo -e "DATE"                                                >>$QCMD
+    #echo -e "CT VOC UV.LOGIN"                                     >>$QCMD
+    #echo -e "DATE"                                                >>$QCMD
+    #cd $QPATH/GEN4GL
+    #$UVCMD <$QCMD 1>>$UVLOG 2>>$UVERR
+	#
 	cd $LDIR
 	echo -e "\\n==== Completed Quiter Plat ==== \\n"
 }
@@ -3150,7 +3189,7 @@ _Q_Triger_(){
 			$UVCMD "CT VOC UV.LOGIN" 1>>$UVLOG 2>>$UVERR              
 			;;
 	esac
-	
+	cd $LDIR
 	echo -e "\\n==== Completado despliegue Triggers $sufijo ==== \\n"
 }
 
